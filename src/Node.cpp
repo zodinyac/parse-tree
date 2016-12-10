@@ -26,7 +26,13 @@ void Node::print()
         if (left) {
             left->print();
         }
+        if (token.get_op().is_binary()) {
+            cout << " ";
+        }
         token.print();
+        if (token.get_op().is_binary()) {
+            cout << " ";
+        }
         if (right) {
             right->print();
         }

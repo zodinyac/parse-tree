@@ -3,14 +3,12 @@
 
 #include <string>
 #include <sstream>
-using namespace std;
-
 #include "Node.h"
 
 class Parser
 {
 public:
-    Parser(string expression);
+    Parser(std::string expression);
 
     Node *parse();
 
@@ -18,7 +16,7 @@ private:
     Node *parse_atom();
     Node *parse_expression(int min_prec);
 
-    stringstream ss;
+    std::stringstream ss;
 };
 
 

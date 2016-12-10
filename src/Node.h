@@ -3,8 +3,6 @@
 
 #include <deque>
 #include <string>
-using namespace std;
-
 #include "Token.h"
 
 class Node {
@@ -16,14 +14,14 @@ public:
     void print();
     void print_pretty();
 
-    operator string() const;
+    operator std::string() const;
 
 private:
     int max_height(Node *node);
 
-    void print_branches(int branch_len, int node_space_len, int start_len, int nodes_in_this_level, const deque<Node *> &nodes_queue);
-    void print_nodes(int branch_len, int node_space_len, int start_len, int nodes_in_this_level, const deque<Node *> &nodes_queue);
-    void print_leaves(int indent_space, int level, int nodes_in_this_level, const deque<Node *> &nodes_queue);
+    void print_branches(int branch_len, int node_space_len, int start_len, int nodes_in_this_level, const std::deque<Node *> &nodes_queue);
+    void print_nodes(int branch_len, int node_space_len, int start_len, int nodes_in_this_level, const std::deque<Node *> &nodes_queue);
+    void print_leaves(int indent_space, int level, int nodes_in_this_level, const std::deque<Node *> &nodes_queue);
     void print_pretty_internal(int level, int indent_space);
 
     Token token;

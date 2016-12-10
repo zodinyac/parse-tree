@@ -1,8 +1,8 @@
 #ifndef PARSE_TREE_OPERATOR_H
 #define PARSE_TREE_OPERATOR_H
 
-#include <map>
-using namespace std;
+#include <string>
+#include <vector>
 
 class Operator
 {
@@ -17,26 +17,27 @@ public:
     };
 
     Operator();
-    Operator(char op, int precedence, Operator::Associativity associativity, Operator::Type type);
+    Operator(std::string op, int precedence, Operator::Associativity associativity, Operator::Type type);
 
-    bool isOp();
-    bool isNoOp();
+    bool isOp() const;
+    bool isNoOp() const;
 
-    char get_op();
-    int get_precedence();
-    Operator::Associativity get_associativity();
+    std::string get_op() const;
+    int get_precedence() const;
+    Operator::Associativity get_associativity() const;
 
-    bool is_unary();
-    bool is_binary();
+    bool is_unary() const;
+    bool is_binary() const;
 
-    static Operator get_operator(char op);
+    static Operator get_operator(bool all, std::string op);
+    static bool is_operator_symbol(char c);
 
 private:
-    static map<char, Operator> operators;
+    static std::vector<Operator> operators;
 
     bool noop = true;
 
-    char op;
+    std::string op;
     int precedence;
     Operator::Associativity associativity;
     Operator::Type type;

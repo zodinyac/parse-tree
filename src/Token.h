@@ -3,7 +3,7 @@
 
 #include <string>
 #include <sstream>
-using namespace std;
+#include "Operator.h"
 
 class Token
 {
@@ -19,27 +19,30 @@ public:
     };
 
     Token(Token::Type type = Token::Type::NONE);
-    explicit Token(char op);
-    explicit Token(string other);
+    explicit Token(Operator op);
+    explicit Token(std::string other);
 
     Token::Type get_type();
     void set_type(Token::Type type);
 
-    char get_op();
+    Operator get_op();
 
     void print();
 
-    operator string() const;
+    operator std::string() const;
 
     static Token &get_token();
-    static void read_token(stringstream &ss);
+    static void read_token(bool all, std::stringstream &ss);
 
 private:
+    static std::string read_operator(bool all, std::stringstream &ss);
+    static std::string read_other(std::stringstream &ss);
+
     static Token current_token;
 
     Token::Type type;
-    char op;
-    string other;
+    Operator op;
+    std::string other;
 };
 
 
