@@ -9,7 +9,7 @@ class Node {
 public:
     Node(Token token, Node *left = nullptr, Node *right = nullptr);
 
-    const Token *getToken();
+    const Token *getToken() const;
 
     void print();
     void print_pretty();

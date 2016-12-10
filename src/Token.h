@@ -22,10 +22,10 @@ public:
     explicit Token(Operator op);
     explicit Token(std::string other);
 
-    Token::Type get_type();
+    Token::Type get_type() const;
     void set_type(Token::Type type);
 
-    Operator get_op();
+    Operator get_op() const;
 
     void print();
 

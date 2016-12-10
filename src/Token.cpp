@@ -12,7 +12,11 @@ Token::Token(Token::Type type) : type(type)
 
 Token::Token(Operator op) : op(op)
 {
-    type = Token::Type::BINOP;
+    if (op.is_unary()) {
+        type = Token::Type::UNOP;
+    } else {
+        type = Token::Type::BINOP;
+    }
 }
 
 Token::Token(string other) : other(other)
@@ -20,7 +24,7 @@ Token::Token(string other) : other(other)
     type = Token::Type::OTHER;
 }
 
-Token::Type Token::get_type()
+Token::Type Token::get_type() const
 {
     return type;
 }
@@ -30,7 +34,7 @@ void Token::set_type(Token::Type type)
     this->type = type;
 }
 
-Operator Token::get_op()
+Operator Token::get_op() const
 {
     return op;
 }
@@ -82,14 +86,24 @@ void Token::read_token(bool all, stringstream &ss)
 
     if (c == '(') {
         current_token = Token(Token::Type::LEFTPAREN);
+        return;
     } else if (c == ')') {
         current_token = Token(Token::Type::RIGHTPAREN);
-    } else if (Operator::is_operator_symbol(c)) {
-        ss.unget();
-        string op = read_operator(all, ss);
+        return;
+    }
+
+
+    ss.unget();
+
+    string op;
+    if (Operator::is_operator_symbol(c)) {
+        op = read_operator(all, ss);
+
+    }
+
+    if (!op.empty()) {
         current_token = Token(Operator::get_operator(all, op));
     } else {
-        ss.unget();
         current_token = Token(read_other(ss));
     }
 }

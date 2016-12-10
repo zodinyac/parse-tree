@@ -16,6 +16,7 @@ vector<Operator> Operator::operators = {
         Operator("!", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
         Operator("~", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
         /* Type cast (type) */
+        Operator("type_cast", P(2), Operator::Associativity::RIGHT, Operator::Type::NOOP),
         Operator("*", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
         Operator("&", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
         Operator("sizeof", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
@@ -82,12 +83,12 @@ Operator::Operator(string op, int precedence, Operator::Associativity associativ
 
 bool Operator::isOp() const
 {
-    return !noop;
+    return !isNoOp();
 }
 
 bool Operator::isNoOp() const
 {
-    return noop;
+    return noop || type == Operator::Type::NOOP;
 }
 
 string Operator::get_op() const
@@ -105,25 +106,43 @@ Operator::Associativity Operator::get_associativity() const
     return associativity;
 }
 
+Operator::Type Operator::get_type() const
+{
+    return type;
+}
+
 bool Operator::is_unary() const
 {
-    return !noop && type == Operator::Type::UNARY;
+    return isOp() && type == Operator::Type::UNARY;
 }
 
 bool Operator::is_binary() const
 {
-    return !noop && type == Operator::Type::BINARY;
+    return isOp() && type == Operator::Type::BINARY;
 }
 
 Operator Operator::get_operator(bool all, string op)
 {
     for (auto op_obj: operators) {
-        if (op_obj.get_op() == op) {
-            if (all) {
-                return op_obj;
-            } else if (!all && op_obj.is_unary()) {
-                return op_obj;
+        if (op_obj.isOp()) {
+            if (op_obj.get_op() == op) {
+                if (all) {
+                    return op_obj;
+                } else if (!all && op_obj.is_unary()) {
+                    return op_obj;
+                }
             }
+        }
+    }
+
+    return Operator();
+}
+
+Operator Operator::get_operator_by_name(string op)
+{
+    for (auto op_obj: operators) {
+        if (op_obj.get_op() == op) {
+            return op_obj;
         }
     }
 
@@ -135,9 +154,11 @@ bool Operator::is_operator_symbol(char c)
     static string symbols;
     if (symbols.empty()) {
         for (auto op: operators) {
-            for (auto cop: op.get_op()) {
-                if (symbols.find(cop) == symbols.npos) {
-                    symbols.push_back(cop);
+            if (op.isOp()) {
+                for (auto cop: op.get_op()) {
+                    if (symbols.find(cop) == symbols.npos) {
+                        symbols.push_back(cop);
+                    }
                 }
             }
         }

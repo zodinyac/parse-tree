@@ -9,7 +9,7 @@ Node::Node(Token token, Node *left, Node *right) : token(token), left(left), rig
 {
 }
 
-const Token *Node::getToken()
+const Token *Node::getToken() const
 {
     return &token;
 }
@@ -26,12 +26,14 @@ void Node::print()
         if (left) {
             left->print();
         }
-        if (token.get_op().is_binary()) {
-            cout << " ";
-        }
-        token.print();
-        if (token.get_op().is_binary()) {
-            cout << " ";
+        if (token.get_type() == Token::Type::OTHER || token.get_op().isOp()) {
+            if (token.get_op().is_binary()) {
+                cout << " ";
+            }
+            token.print();
+            if (token.get_op().is_binary()) {
+                cout << " ";
+            }
         }
         if (right) {
             right->print();

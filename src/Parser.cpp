@@ -24,8 +24,6 @@ Node *Parser::parse_atom()
 
     if (token.get_type() == Token::Type::NONE) {
         return nullptr;
-        //cerr << "Source ended unexpectedly." << endl;
-        //exit(2);
     }
 
     if (token.get_type() == Token::Type::LEFTPAREN) {
@@ -39,14 +37,8 @@ Node *Parser::parse_atom()
         return new Node(Token::Type::PARENS, node);
     }
 
-    if (token.get_type() == Token::Type::BINOP) {
-        if (token.get_op().is_unary()) {
-            Token::get_token().set_type(Token::Type::UNOP);
-            return nullptr;
-        }
+    if (token.get_type() == Token::Type::UNOP || token.get_type() == Token::Type::BINOP) {
         return nullptr;
-        //cerr << "Expected an atom, not an operator '" << token.get_op() << "'." << endl;
-        //exit(2);
     }
 
     Token::read_token(true, ss);
@@ -58,8 +50,15 @@ Node *Parser::parse_expression(int min_prec)
     Node *atom_lhs = parse_atom();
     while (true) {
         Token token = Token::get_token();
+        if (atom_lhs && atom_lhs->getToken()->get_type() == Token::Type::PARENS
+            && (token.get_type() == Token::Type::OTHER
+                || token.get_type() == Token::Type::LEFTPAREN
+                || token.get_type() == Token::Type::UNOP)) {
+            token = Token(Operator::get_operator_by_name("type_cast"));
+        }
         if (token.get_type() == Token::Type::NONE
-            || (token.get_type() != Token::Type::UNOP && token.get_type() != Token::Type::BINOP)) {
+            || (token.get_type() != Token::Type::UNOP
+                && token.get_type() != Token::Type::BINOP)) {
             break;
         }
 
@@ -68,7 +67,9 @@ Node *Parser::parse_expression(int min_prec)
             break;
         }
 
-        Token::read_token(true, ss);
+        if (token.get_op().isOp()) {
+            Token::read_token(true, ss);
+        }
         int next_min_prec = op.get_precedence() + (op.get_associativity() == Operator::Associativity::LEFT);
         Node *atom_rhs = parse_expression(next_min_prec);
         atom_lhs = new Node(token, atom_lhs, atom_rhs);
