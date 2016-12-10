@@ -111,13 +111,18 @@ void Token::read_token(bool all, stringstream &ss)
 string Token::read_operator(bool all, stringstream &ss)
 {
     string op;
+    bool is_first = true;
     bool is_alpha = false;
 
     char c;
     bool ok;
-    while ((ok = static_cast<bool>(ss >> noskipws >> c >> skipws)) && Operator::is_operator_symbol(c)) {
-        if (isalpha(c) || c == '_') {
-            is_alpha = true;
+    while ((ok = static_cast<bool>(ss >> noskipws >> c >> skipws))
+           && ((!is_alpha && Operator::is_operator_symbol(c)) || (is_alpha && (isalnum(c) || c == '_')))) {
+        if (is_first) {
+            is_first = false;
+            if (isalpha(c) || c == '_') {
+                is_alpha = true;
+            }
         }
         op.push_back(c);
     }
@@ -128,11 +133,15 @@ string Token::read_operator(bool all, stringstream &ss)
         ss.clear();
     }
 
-    is_alpha = is_alpha && Operator::get_operator(all, op).isNoOp();
+    cout << " op " << op << endl;
+
+    is_alpha = !is_first && is_alpha && Operator::get_operator(all, op).isNoOp();
     while (op.length() > 0 && (Operator::get_operator(all, op).isNoOp() || is_alpha)) {
         ss.unget();
         op.pop_back();
     }
+
+    cout << " op " << op << endl;
 
     return op;
 }
