@@ -15,5 +15,6 @@ int main(int argc, char *argv[])
     Parser parser(argv[1]);
     Node *root = parser.parse();
 
+    root->print();
     root->print_pretty();
 }

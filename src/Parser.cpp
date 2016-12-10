@@ -35,7 +35,7 @@ Node *Parser::parse_atom()
             exit(2);
         }
         Token::read_token(ss);
-        return node;
+        return new Node(Token::Type::PARENS, node);
     }
 
     if (token.get_type() == Token::Type::BINOP) {

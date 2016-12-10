@@ -16,12 +16,20 @@ const Token *Node::getToken()
 
 void Node::print()
 {
-    if (left) {
-        left->print();
-    }
-    token.print();
-    if (right) {
-        right->print();
+    if (token.get_type() == Token::Type::PARENS) {
+        cout << "(";
+        if (left) {
+            left->print();
+        }
+        cout << ")";
+    } else {
+        if (left) {
+            left->print();
+        }
+        token.print();
+        if (right) {
+            right->print();
+        }
     }
 }
 

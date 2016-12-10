@@ -12,6 +12,7 @@ public:
         NONE,
         LEFTPAREN,
         RIGHTPAREN,
+        PARENS,
         UNOP,
         BINOP,
         OTHER

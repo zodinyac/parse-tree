@@ -48,6 +48,9 @@ Token::operator string() const
         case Token::Type::RIGHTPAREN:
             return ")";
 
+        case Token::Type::PARENS:
+            return "()";
+
         case Token::Type::BINOP:
             return string(1, op);
 
