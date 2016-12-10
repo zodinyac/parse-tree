@@ -26,6 +26,8 @@ public:
 
     void print();
 
+    operator string() const;
+
     static Token get_token();
     static void read_token(stringstream &ss);
 

@@ -32,27 +32,27 @@ char Token::get_op()
 
 void Token::print()
 {
+    cout << string(*this);
+}
+
+Token::operator string() const
+{
     switch (type) {
         default:
         case Token::Type::NONE:
-            cout << endl;
-            break;
+            return "\n";
 
         case Token::Type::LEFTPAREN:
-            cout << "(";
-            break;
+            return "(";
 
         case Token::Type::RIGHTPAREN:
-            cout << ")";
-            break;
+            return ")";
 
         case Token::Type::BINOP:
-            cout << op;
-            break;
+            return string(1, op);
 
         case Token::Type::OTHER:
-            cout << other;
-            break;
+            return other;
     }
 }
 
