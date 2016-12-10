@@ -133,10 +133,18 @@ string Token::read_operator(bool all, stringstream &ss)
 string Token::read_other(std::stringstream &ss)
 {
     string other;
+    Token::NumberType type = Token::NumberType::UNKNOWN;
 
     char c;
     bool ok;
-    while ((ok = static_cast<bool>(ss >> c)) && ((c == '_') || isalnum(c))) {
+    while ((ok = static_cast<bool>(ss >> noskipws >> c >> skipws)) && ((c == '_') || isalnum(c) || (type == Token::NumberType::NUMBER && c == '.'))) {
+        if (type == Token::NumberType::UNKNOWN) {
+            if (isdigit(c)) {
+                type = Token::NumberType::NUMBER;
+            } else {
+                type = Token::NumberType::NOT_NUMBER;
+            }
+        }
         other.push_back(c);
     }
 

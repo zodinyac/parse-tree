@@ -35,6 +35,11 @@ public:
     static void read_token(bool all, std::stringstream &ss);
 
 private:
+    enum NumberType {
+        UNKNOWN,
+        NOT_NUMBER,
+        NUMBER
+    };
     static std::string read_operator(bool all, std::stringstream &ss);
     static std::string read_other(std::stringstream &ss);
 
