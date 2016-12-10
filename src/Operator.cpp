@@ -1,16 +1,71 @@
 #include "Operator.h"
 using namespace std;
 
+#define P(x) (16 - (x))
+/* http://en.cppreference.com/w/c/language/operator_precedence */
 vector<Operator> Operator::operators = {
-    Operator("+", 1, Operator::Associativity::LEFT, Operator::Type::BINARY),
-    Operator("-", 1, Operator::Associativity::LEFT, Operator::Type::BINARY),
-    Operator("*", 2, Operator::Associativity::LEFT, Operator::Type::BINARY),
-    Operator("/", 2, Operator::Associativity::LEFT, Operator::Type::BINARY),
-    Operator("^", 3, Operator::Associativity::RIGHT, Operator::Type::BINARY),
-    Operator("!", 4, Operator::Associativity::RIGHT, Operator::Type::UNARY),
-    Operator("++", 4, Operator::Associativity::RIGHT, Operator::Type::UNARY),
-    Operator("++", 5, Operator::Associativity::LEFT, Operator::Type::UNARY)
+        Operator("++", P(1), Operator::Associativity::LEFT, Operator::Type::UNARY),
+        /* Function call () */
+        /* Array subscribing [] */
+        Operator(".", P(1), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("->", P(1), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        /* Compound literal (type){list} */
+
+        Operator("++", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
+        Operator("--", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
+        Operator("!", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
+        Operator("~", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
+        /* Type cast (type) */
+        Operator("*", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
+        Operator("&", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
+        Operator("sizeof", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
+        Operator("_Alignof", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
+
+        Operator("*", P(3), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("/", P(3), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("%", P(3), Operator::Associativity::LEFT, Operator::Type::BINARY),
+
+        Operator("+", P(4), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("-", P(4), Operator::Associativity::LEFT, Operator::Type::BINARY),
+
+        Operator("<<", P(5), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator(">>", P(5), Operator::Associativity::LEFT, Operator::Type::BINARY),
+
+        Operator("<", P(6), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("<=", P(6), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator(">", P(6), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator(">=", P(6), Operator::Associativity::LEFT, Operator::Type::BINARY),
+
+        Operator("==", P(7), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("!=", P(7), Operator::Associativity::LEFT, Operator::Type::BINARY),
+
+        Operator("&", P(8), Operator::Associativity::LEFT, Operator::Type::BINARY),
+
+        Operator("^", P(9), Operator::Associativity::LEFT, Operator::Type::BINARY),
+
+        Operator("|", P(10), Operator::Associativity::LEFT, Operator::Type::BINARY),
+
+        Operator("&&", P(11), Operator::Associativity::LEFT, Operator::Type::BINARY),
+
+        Operator("||", P(12), Operator::Associativity::LEFT, Operator::Type::BINARY),
+
+        /* Ternary conditional ?: */
+
+        Operator("=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator("+=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator("-=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator("*=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator("/=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator("%=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator("<<=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator(">>=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator("&=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator("^=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator("|=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+
+        Operator(",", P(15), Operator::Associativity::LEFT, Operator::Type::BINARY)
 };
+#undef P
 
 Operator::Operator() : noop(true)
 {
