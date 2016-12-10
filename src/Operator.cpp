@@ -1,21 +1,24 @@
 #include "Operator.h"
 
 map<char, Operator> Operator::operators = {
-    { '+', Operator('+', 1, Operator::Associativity::LEFT) },
-    { '-', Operator('-', 1, Operator::Associativity::LEFT) },
-    { '*', Operator('*', 2, Operator::Associativity::LEFT) },
-    { '/', Operator('/', 2, Operator::Associativity::LEFT) },
-    { '^', Operator('^', 3, Operator::Associativity::RIGHT) }
+    { '+', Operator('+', 1, Operator::Associativity::LEFT, Operator::Type::BINARY) },
+    { '-', Operator('-', 1, Operator::Associativity::LEFT, Operator::Type::BINARY) },
+    { '*', Operator('*', 2, Operator::Associativity::LEFT, Operator::Type::BINARY) },
+    { '/', Operator('/', 2, Operator::Associativity::LEFT, Operator::Type::BINARY) },
+    { '^', Operator('^', 3, Operator::Associativity::RIGHT, Operator::Type::BINARY) },
+    { '!', Operator('!', 4, Operator::Associativity::RIGHT, Operator::Type::UNARY) },
+    { '?', Operator('?', 5, Operator::Associativity::LEFT, Operator::Type::UNARY) }
 };
 
 Operator::Operator() : noop(true)
 {
 }
 
-Operator::Operator(char op, int precedence, Operator::Associativity associativity) : noop(false),
-                                                                                     op(op),
-                                                                                     precedence(precedence),
-                                                                                     associativity(associativity)
+Operator::Operator(char op, int precedence, Operator::Associativity associativity, Operator::Type type) : noop(false),
+                                                                                                          op(op),
+                                                                                                          precedence(precedence),
+                                                                                                          associativity(associativity),
+                                                                                                          type(type)
 {
 }
 
@@ -42,6 +45,16 @@ int Operator::get_precedence()
 Operator::Associativity Operator::get_associativity()
 {
     return associativity;
+}
+
+bool Operator::is_unary()
+{
+    return !noop && type == Operator::Type::UNARY;
+}
+
+bool Operator::is_binary()
+{
+    return !noop && type == Operator::Type::BINARY;
 }
 
 Operator Operator::get_operator(char op)

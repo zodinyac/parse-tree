@@ -25,6 +25,11 @@ Token::Type Token::get_type()
     return type;
 }
 
+void Token::set_type(Token::Type type)
+{
+    this->type = type;
+}
+
 char Token::get_op()
 {
     return op;
@@ -51,6 +56,9 @@ Token::operator string() const
         case Token::Type::PARENS:
             return "()";
 
+        case Token::Type::UNOP:
+            return string(1, op);
+
         case Token::Type::BINOP:
             return string(1, op);
 
@@ -59,7 +67,7 @@ Token::operator string() const
     }
 }
 
-Token Token::get_token()
+Token &Token::get_token()
 {
     return current_token;
 }

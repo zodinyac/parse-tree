@@ -23,8 +23,9 @@ Node *Parser::parse_atom()
     Token token = Token::get_token();
 
     if (token.get_type() == Token::Type::NONE) {
-        cerr << "Source ended unexpectedly." << endl;
-        exit(2);
+        return nullptr;
+        //cerr << "Source ended unexpectedly." << endl;
+        //exit(2);
     }
 
     if (token.get_type() == Token::Type::LEFTPAREN) {
@@ -39,8 +40,13 @@ Node *Parser::parse_atom()
     }
 
     if (token.get_type() == Token::Type::BINOP) {
-        cerr << "Expected an atom, not an operator '" << token.get_op() << "'." << endl;
-        exit(2);
+        if (Operator::get_operator(token.get_op()).is_unary()) {
+            Token::get_token().set_type(Token::Type::UNOP);
+            return nullptr;
+        }
+        return nullptr;
+        //cerr << "Expected an atom, not an operator '" << token.get_op() << "'." << endl;
+        //exit(2);
     }
 
     Token::read_token(ss);
@@ -52,7 +58,8 @@ Node *Parser::parse_expression(int min_prec)
     Node *atom_lhs = parse_atom();
     while (true) {
         Token token = Token::get_token();
-        if (token.get_type() == Token::Type::NONE || token.get_type() != Token::Type::BINOP) {
+        if (token.get_type() == Token::Type::NONE
+            || (token.get_type() != Token::Type::UNOP && token.get_type() != Token::Type::BINOP)) {
             break;
         }
 
@@ -64,7 +71,6 @@ Node *Parser::parse_expression(int min_prec)
         Token::read_token(ss);
         int next_min_prec = op.get_precedence() + (op.get_associativity() == Operator::Associativity::LEFT);
         Node *atom_rhs = parse_expression(next_min_prec);
-
         atom_lhs = new Node(token, atom_lhs, atom_rhs);
     }
 

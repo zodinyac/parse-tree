@@ -23,13 +23,15 @@ public:
     explicit Token(string other);
 
     Token::Type get_type();
+    void set_type(Token::Type type);
+
     char get_op();
 
     void print();
 
     operator string() const;
 
-    static Token get_token();
+    static Token &get_token();
     static void read_token(stringstream &ss);
 
 private:
