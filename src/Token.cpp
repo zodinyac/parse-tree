@@ -111,19 +111,26 @@ void Token::read_token(bool all, stringstream &ss)
 string Token::read_operator(bool all, stringstream &ss)
 {
     string op;
+    bool is_alpha = false;
 
     char c;
     bool ok;
     while ((ok = static_cast<bool>(ss >> noskipws >> c >> skipws)) && Operator::is_operator_symbol(c)) {
+        if (isalpha(c) || c == '_') {
+            is_alpha = true;
+        }
         op.push_back(c);
     }
 
     if (ok) {
         ss.unget();
+    } else {
+        ss.clear();
     }
 
-    while (op.length() > 0 && Operator::get_operator(all, op).isNoOp()) {
-        ss.putback(op.back());
+    is_alpha = is_alpha && Operator::get_operator(all, op).isNoOp();
+    while (op.length() > 0 && (Operator::get_operator(all, op).isNoOp() || is_alpha)) {
+        ss.unget();
         op.pop_back();
     }
 
@@ -150,6 +157,8 @@ string Token::read_other(std::stringstream &ss)
 
     if (ok) {
         ss.unget();
+    } else {
+        ss.clear();
     }
 
     return other;
