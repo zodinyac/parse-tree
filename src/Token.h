@@ -18,6 +18,7 @@ public:
         BRACKETS,
         UNOP,
         BINOP,
+        SPECIALOP,
         OTHER
     };
 
@@ -43,7 +44,7 @@ private:
         NOT_NUMBER,
         NUMBER
     };
-    static std::string read_operator(bool all, std::stringstream &ss);
+    static std::string read_operator(bool all, bool postfix, std::stringstream &ss);
     static std::string read_other(std::stringstream &ss);
 
     static Token current_token;

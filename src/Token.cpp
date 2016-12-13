@@ -14,8 +14,10 @@ Token::Token(Operator op) : op(op)
 {
     if (op.is_unary()) {
         type = Token::Type::UNOP;
-    } else {
+    } else if (op.is_binary()) {
         type = Token::Type::BINOP;
+    } else {
+        type = Token::Type::SPECIALOP;
     }
 }
 
@@ -73,6 +75,9 @@ Token::operator string() const
         case Token::Type::BINOP:
             return op.get_op();
 
+        case Token::Type::SPECIALOP:
+            return op.get_op_short();
+
         case Token::Type::OTHER:
             return other;
     }
@@ -107,23 +112,25 @@ void Token::read_token(bool all, stringstream &ss)
         return;
     }
 
-
     ss.unget();
+
+    bool postfix = (current_token.get_type() == Token::Type::RIGHTPAREN
+                   || current_token.get_type() == Token::Type::RIGHTBRACKET
+                   || current_token.get_type() == Token::Type::OTHER);
 
     string op;
     if (Operator::is_operator_symbol(c)) {
-        op = read_operator(all, ss);
-
+        op = read_operator(all, postfix, ss);
     }
 
     if (!op.empty()) {
-        current_token = Token(Operator::get_operator(all, op));
+        current_token = Token(Operator::get_operator(all, postfix, op));
     } else {
         current_token = Token(read_other(ss));
     }
 }
 
-string Token::read_operator(bool all, stringstream &ss)
+string Token::read_operator(bool all, bool postfix, stringstream &ss)
 {
     string op;
     bool is_first = true;
@@ -148,8 +155,8 @@ string Token::read_operator(bool all, stringstream &ss)
         ss.clear();
     }
 
-    is_alpha = !is_first && is_alpha && Operator::get_operator(all, op).isNoOp();
-    while (op.length() > 0 && (Operator::get_operator(all, op).isNoOp() || is_alpha)) {
+    is_alpha = !is_first && is_alpha && Operator::get_operator(all, postfix, op).isNoOp();
+    while (op.length() > 0 && (Operator::get_operator(all, postfix, op).isNoOp() || is_alpha)) {
         ss.unget();
         op.pop_back();
     }

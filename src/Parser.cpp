@@ -26,7 +26,8 @@ Node *Parser::parse_atom()
         || token.get_type() == Token::Type::RIGHTPAREN
         || token.get_type() == Token::Type::RIGHTBRACKET
         || token.get_type() == Token::Type::UNOP
-        || token.get_type() == Token::Type::BINOP) {
+        || token.get_type() == Token::Type::BINOP
+        || token.get_type() == Token::Type::SPECIALOP) {
         return nullptr;
     }
 
@@ -65,16 +66,21 @@ Node *Parser::parse_expression(int min_prec)
                 || token.get_type() == Token::Type::LEFTPAREN
                 || token.get_type() == Token::Type::UNOP)) {
             token = Token(Operator::get_operator_by_name("type_cast"));
-        } else if (atom_lhs && atom_lhs->getToken()->get_type() == Token::Type::OTHER
+        } else if (atom_lhs && (atom_lhs->getToken()->get_type() == Token::Type::OTHER
+                                || (atom_lhs->getToken()->get_type() == Token::Type::SPECIALOP
+                                    && atom_lhs->getToken()->get_op().get_op() == "array_subscribing"))
             && token.get_type() == Token::Type::LEFTPAREN) {
             token = Token(Operator::get_operator_by_name("function_call"));
-        } else if (atom_lhs && atom_lhs->getToken()->get_type() == Token::Type::OTHER
+        } else if (atom_lhs && (atom_lhs->getToken()->get_type() == Token::Type::OTHER
+                                || (atom_lhs->getToken()->get_type() == Token::Type::SPECIALOP
+                                    && atom_lhs->getToken()->get_op().get_op() == "array_subscribing"))
                    && token.get_type() == Token::Type::LEFTBRACKET) {
             token = Token(Operator::get_operator_by_name("array_subscribing"));
         }
         if (token.get_type() == Token::Type::NONE
             || (token.get_type() != Token::Type::UNOP
-                && token.get_type() != Token::Type::BINOP)) {
+                && token.get_type() != Token::Type::BINOP
+                && token.get_type() != Token::Type::SPECIALOP)) {
             break;
         }
 

@@ -134,4 +134,3 @@ void Node::print_pretty_internal(int level, int indent_space)
     print_branches(branch_len, node_space_len, start_len, nodes_in_this_level, nodes_queue);
     print_leaves(indent_space, level, nodes_in_this_level, nodes_queue);
 }
-
