@@ -13,6 +13,9 @@ public:
         LEFTPAREN,
         RIGHTPAREN,
         PARENS,
+        LEFTBRACKET,
+        RIGHTBRACKET,
+        BRACKETS,
         UNOP,
         BINOP,
         OTHER

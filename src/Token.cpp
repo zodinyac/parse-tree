@@ -60,6 +60,15 @@ Token::operator string() const
         case Token::Type::PARENS:
             return "()";
 
+        case Token::Type::LEFTBRACKET:
+            return "[";
+
+        case Token::Type::RIGHTBRACKET:
+            return "]";
+
+        case Token::Type::BRACKETS:
+            return "[]";
+
         case Token::Type::UNOP:
         case Token::Type::BINOP:
             return op.get_op();
@@ -89,6 +98,12 @@ void Token::read_token(bool all, stringstream &ss)
         return;
     } else if (c == ')') {
         current_token = Token(Token::Type::RIGHTPAREN);
+        return;
+    } else if (c == '[') {
+        current_token = Token(Token::Type::LEFTBRACKET);
+        return;
+    } else if (c == ']') {
+        current_token = Token(Token::Type::RIGHTBRACKET);
         return;
     }
 

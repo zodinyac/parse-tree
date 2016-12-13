@@ -8,6 +8,7 @@ vector<Operator> Operator::operators = {
         /* Function call () */
         Operator("function_call", P(1), Operator::Associativity::LEFT, Operator::Type::NOOP),
         /* Array subscribing [] */
+        Operator("array_subscribing", P(1), Operator::Associativity::LEFT, Operator::Type::NOOP),
         Operator(".", P(1), Operator::Associativity::LEFT, Operator::Type::BINARY),
         Operator("->", P(1), Operator::Associativity::LEFT, Operator::Type::BINARY),
         /* Compound literal (type){list} */
