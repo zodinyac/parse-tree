@@ -22,7 +22,10 @@ Node *Parser::parse_atom()
 {
     Token token = Token::get_token();
 
-    if (token.get_type() == Token::Type::NONE) {
+    if (token.get_type() == Token::Type::NONE
+        || token.get_type() == Token::Type::RIGHTPAREN
+        || token.get_type() == Token::Type::UNOP
+        || token.get_type() == Token::Type::BINOP) {
         return nullptr;
     }
 
@@ -35,10 +38,6 @@ Node *Parser::parse_atom()
         }
         Token::read_token(true, ss);
         return new Node(Token::Type::PARENS, node);
-    }
-
-    if (token.get_type() == Token::Type::UNOP || token.get_type() == Token::Type::BINOP) {
-        return nullptr;
     }
 
     Token::read_token(true, ss);
@@ -55,6 +54,9 @@ Node *Parser::parse_expression(int min_prec)
                 || token.get_type() == Token::Type::LEFTPAREN
                 || token.get_type() == Token::Type::UNOP)) {
             token = Token(Operator::get_operator_by_name("type_cast"));
+        } else if (atom_lhs && atom_lhs->getToken()->get_type() == Token::Type::OTHER
+            && token.get_type() == Token::Type::LEFTPAREN) {
+            token = Token(Operator::get_operator_by_name("function_call"));
         }
         if (token.get_type() == Token::Type::NONE
             || (token.get_type() != Token::Type::UNOP

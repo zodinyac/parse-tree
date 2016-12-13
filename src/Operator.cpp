@@ -6,6 +6,7 @@ using namespace std;
 vector<Operator> Operator::operators = {
         Operator("++", P(1), Operator::Associativity::LEFT, Operator::Type::UNARY),
         /* Function call () */
+        Operator("function_call", P(1), Operator::Associativity::LEFT, Operator::Type::NOOP),
         /* Array subscribing [] */
         Operator(".", P(1), Operator::Associativity::LEFT, Operator::Type::BINARY),
         Operator("->", P(1), Operator::Associativity::LEFT, Operator::Type::BINARY),

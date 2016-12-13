@@ -133,15 +133,11 @@ string Token::read_operator(bool all, stringstream &ss)
         ss.clear();
     }
 
-    cout << " op " << op << endl;
-
     is_alpha = !is_first && is_alpha && Operator::get_operator(all, op).isNoOp();
     while (op.length() > 0 && (Operator::get_operator(all, op).isNoOp() || is_alpha)) {
         ss.unget();
         op.pop_back();
     }
-
-    cout << " op " << op << endl;
 
     return op;
 }
