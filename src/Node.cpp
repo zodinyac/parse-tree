@@ -14,6 +14,16 @@ const Token *Node::getToken() const
     return &token;
 }
 
+Node *Node::getLeft()
+{
+    return left;
+}
+
+Node *Node::getRight()
+{
+    return right;
+}
+
 void Node::print()
 {
     if (token.get_type() == Token::Type::PARENS) {

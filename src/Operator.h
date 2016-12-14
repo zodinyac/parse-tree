@@ -19,7 +19,7 @@ public:
     };
 
     Operator();
-    Operator(std::string op, int precedence = 0,
+    Operator(std::string op, std::string id, int precedence = 0,
              Operator::Associativity associativity = Operator::Associativity::LEFT,
              Operator::Type type = Operator::Type::SPECIAL);
 
@@ -28,6 +28,7 @@ public:
 
     std::string get_op() const;
     std::string get_op_short() const;
+    std::string get_id() const;
     int get_precedence() const;
     Operator::Associativity get_associativity() const;
     Operator::Type get_type() const;
@@ -38,7 +39,7 @@ public:
     bool is_binary() const;
 
     static Operator get_operator(bool all, bool postfix, std::string op);
-    static Operator get_operator_by_name(std::string op);
+    static Operator get_operator_by_id(std::string id);
     static bool is_operator_symbol(char c);
 
 private:
@@ -46,8 +47,9 @@ private:
 
     bool noop = true;
 
-    std::string op;
-    int precedence;
+    std::string op = "";
+    std::string id = "";
+    int precedence = 0;
     Operator::Associativity associativity;
     Operator::Type type;
 };

@@ -11,6 +11,9 @@ public:
 
     const Token *getToken() const;
 
+    Node *getLeft();
+    Node *getRight();
+
     void print();
     void print_pretty();
 

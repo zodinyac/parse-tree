@@ -71,26 +71,32 @@ Node *Parser::parse_expression(int min_prec)
     Node *atom_lhs = parse_atom();
     while (true) {
         Token token = Token::get_token();
-        if (atom_lhs && atom_lhs->getToken()->get_type() == Token::Type::PARENS
-            && (token.get_type() == Token::Type::OTHER
-                || token.get_type() == Token::Type::LEFTPAREN
-                || token.get_type() == Token::Type::UNOP)) {
-            token = Token(Operator::get_operator_by_name("type_cast"));
-        } else if (atom_lhs && atom_lhs->getToken()->get_type() == Token::Type::PARENS
-                   && token.get_type() == Token::Type::LEFTBRACE) {
-            token = Token(Operator::get_operator_by_name("compound_literal"));
-        } else if (atom_lhs && (atom_lhs->getToken()->get_type() == Token::Type::OTHER
-                                || (atom_lhs->getToken()->get_type() == Token::Type::SPECIALOP
-                                    && (atom_lhs->getToken()->get_op().get_op() == "array_subscribing"
-                                        || atom_lhs->getToken()->get_op().get_op() == "function_call")))
-            && token.get_type() == Token::Type::LEFTPAREN) {
-            token = Token(Operator::get_operator_by_name("function_call"));
-        } else if (atom_lhs && (atom_lhs->getToken()->get_type() == Token::Type::OTHER
-                                || (atom_lhs->getToken()->get_type() == Token::Type::SPECIALOP
-                                    && atom_lhs->getToken()->get_op().get_op() == "array_subscribing"))
-                   && token.get_type() == Token::Type::LEFTBRACKET) {
-            token = Token(Operator::get_operator_by_name("array_subscribing"));
+
+        if (atom_lhs) {
+            if (atom_lhs->getToken()->get_type() == Token::Type::PARENS) {
+                if (atom_lhs->getLeft()
+                    && atom_lhs->getLeft()->getToken()->get_op().get_id() == "DEREFERENCE"
+                    && token.get_type() == Token::Type::LEFTPAREN) {
+                    token = Token(Operator::get_operator_by_id("FUNCTION_CALL"));
+                } else if (token.get_type() == Token::Type::LEFTBRACE) {
+                    token = Token(Operator::get_operator_by_id("COMPOUND_LITERAL"));
+                } else if (token.get_type() == Token::Type::OTHER
+                           || token.get_type() == Token::Type::LEFTPAREN
+                           || token.get_type() == Token::Type::UNOP) {
+                    token = Token(Operator::get_operator_by_id("TYPE_CAST"));
+                }
+            } else if ((atom_lhs->getToken()->get_type() == Token::Type::OTHER
+                        || atom_lhs->getToken()->get_op().get_id() == "ARRAY_SUBSCRIBING")
+                       && token.get_type() == Token::Type::LEFTBRACKET) {
+                token = Token(Operator::get_operator_by_id("ARRAY_SUBSCRIBING"));
+            } else if ((atom_lhs->getToken()->get_type() == Token::Type::OTHER
+                        || atom_lhs->getToken()->get_op().get_id() == "ARRAY_SUBSCRIBING"
+                        || atom_lhs->getToken()->get_op().get_id() == "FUNCTION_CALL")
+                       && token.get_type() == Token::Type::LEFTPAREN) {
+                token = Token(Operator::get_operator_by_id("FUNCTION_CALL"));
+            }
         }
+
         if (token.get_type() == Token::Type::NONE
             || (token.get_type() != Token::Type::UNOP
                 && token.get_type() != Token::Type::BINOP

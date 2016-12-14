@@ -5,130 +5,130 @@ using namespace std;
 /* http://en.cppreference.com/w/c/language/operator_precedence */
 vector<Operator> Operator::operators = {
         /* Suffix/postfix increment and decrement */
-        Operator("++", P(1), Operator::Associativity::LEFT, Operator::Type::UNARY_POSTFIX),
-        Operator("--", P(1), Operator::Associativity::LEFT, Operator::Type::UNARY_POSTFIX),
+        Operator("++", "POSTFIX_INCREMENT", P(1), Operator::Associativity::LEFT, Operator::Type::UNARY_POSTFIX),
+        Operator("--", "POSTFIX_DECREMENT", P(1), Operator::Associativity::LEFT, Operator::Type::UNARY_POSTFIX),
 
         /* Function call () */
-        Operator("function_call", P(1), Operator::Associativity::LEFT, Operator::Type::SPECIAL),
+        Operator("function_call", "FUNCTION_CALL", P(1), Operator::Associativity::LEFT, Operator::Type::SPECIAL),
 
         /* Array subscribing [] */
-        Operator("array_subscribing", P(1), Operator::Associativity::LEFT, Operator::Type::SPECIAL),
+        Operator("array_subscribing", "ARRAY_SUBSCRIBING", P(1), Operator::Associativity::LEFT, Operator::Type::SPECIAL),
 
         /* Structure and union member access */
-        Operator(".", P(1), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator(".", "MEMBER_ACCESS", P(1), Operator::Associativity::LEFT, Operator::Type::BINARY),
 
         /* Structure and union member access through pointer */
-        Operator("->", P(1), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("->", "MEMBER_ACCESS_POINTER", P(1), Operator::Associativity::LEFT, Operator::Type::BINARY),
 
         /* Compound literal (type){list} */
-        Operator("compound_literal", P(1), Operator::Associativity::LEFT, Operator::Type::SPECIAL),
+        Operator("compound_literal", "COMPOUND_LITERAL", P(1), Operator::Associativity::LEFT, Operator::Type::SPECIAL),
 
 
         /* Prefix increment and decrement */
-        Operator("++", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
-        Operator("--", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
+        Operator("++", "PREFIX_INCREMENT", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
+        Operator("--", "PREFIX_DECREMENT", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
 
         /* Unary plus and minus */
-        Operator("+", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
-        Operator("-", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
+        Operator("+", "UNARY_PLUS", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
+        Operator("-", "UNARY_MINUS", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
 
         /* Logical NOT and bitwise NOT */
-        Operator("!", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
-        Operator("~", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
+        Operator("!", "LOGICAL_NOT", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
+        Operator("~", "BITWISE_NOT", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
 
         /* Type cast (type) */
-        Operator("type_cast", P(2), Operator::Associativity::RIGHT, Operator::Type::SPECIAL),
+        Operator("type_cast", "TYPE_CAST", P(2), Operator::Associativity::RIGHT, Operator::Type::SPECIAL),
 
         /* Indirection (dereference) */
-        Operator("*", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
+        Operator("*", "DEREFERENCE", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
 
         /* Address-of */
-        Operator("&", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
+        Operator("&", "ADDRESS_OF", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
 
         /* Size-of */
-        Operator("sizeof", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
+        Operator("sizeof", "SIZE_OF", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
 
         /* Alignment requirement */
-        Operator("_Alignof", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
+        Operator("_Alignof", "ALIGNMENT", P(2), Operator::Associativity::RIGHT, Operator::Type::UNARY),
 
 
         /* Multiplication, division, and remainder */
-        Operator("*", P(3), Operator::Associativity::LEFT, Operator::Type::BINARY),
-        Operator("/", P(3), Operator::Associativity::LEFT, Operator::Type::BINARY),
-        Operator("%", P(3), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("*", "MULTIPLICATION", P(3), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("/", "DIVISION", P(3), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("%", "REMAINDER", P(3), Operator::Associativity::LEFT, Operator::Type::BINARY),
 
 
         /* Addition and subtraction */
-        Operator("+", P(4), Operator::Associativity::LEFT, Operator::Type::BINARY),
-        Operator("-", P(4), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("+", "ADDICTION", P(4), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("-", "SUBTRACTION", P(4), Operator::Associativity::LEFT, Operator::Type::BINARY),
 
 
         /* Bitwise left shift and right shift */
-        Operator("<<", P(5), Operator::Associativity::LEFT, Operator::Type::BINARY),
-        Operator(">>", P(5), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("<<", "BITWISE_LEFT_SHIFT", P(5), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator(">>", "BITWISE_RIGHT_SHIFT", P(5), Operator::Associativity::LEFT, Operator::Type::BINARY),
 
 
         /* For relational operators < and ≤ respectively */
-        Operator("<", P(6), Operator::Associativity::LEFT, Operator::Type::BINARY),
-        Operator("<=", P(6), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("<", "LESS", P(6), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("<=", "LESS_EQUAL", P(6), Operator::Associativity::LEFT, Operator::Type::BINARY),
 
         /* For relational operators > and ≥ respectively */
-        Operator(">", P(6), Operator::Associativity::LEFT, Operator::Type::BINARY),
-        Operator(">=", P(6), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator(">", "GREATER", P(6), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator(">=", "GREATER_EQUAL", P(6), Operator::Associativity::LEFT, Operator::Type::BINARY),
 
 
         /* For relational = and ≠ respectively */
-        Operator("==", P(7), Operator::Associativity::LEFT, Operator::Type::BINARY),
-        Operator("!=", P(7), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("==", "EQUAL", P(7), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("!=", "NOT_EUAL", P(7), Operator::Associativity::LEFT, Operator::Type::BINARY),
 
 
         /* Bitwise AND */
-        Operator("&", P(8), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("&", "BITWISE_AND", P(8), Operator::Associativity::LEFT, Operator::Type::BINARY),
 
 
         /* Bitwise XOR (exclusive or) */
-        Operator("^", P(9), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("^", "BITWISE_XOR", P(9), Operator::Associativity::LEFT, Operator::Type::BINARY),
 
 
         /* Bitwise OR (inclusive or) */
-        Operator("|", P(10), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("|", "BITWISE_OR", P(10), Operator::Associativity::LEFT, Operator::Type::BINARY),
 
 
         /* Logical AND */
-        Operator("&&", P(11), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("&&", "LOGICAL_AND", P(11), Operator::Associativity::LEFT, Operator::Type::BINARY),
 
 
         /* Logical OR */
-        Operator("||", P(12), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator("||", "LOGICAL_OR", P(12), Operator::Associativity::LEFT, Operator::Type::BINARY),
 
         /* Ternary conditional ?: */
         /* Not realized */
 
 
         /* Simple assignment */
-        Operator("=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator("=", "ASSIGNMENT", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
 
         /* Assignment by sum and difference */
-        Operator("+=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
-        Operator("-=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator("+=", "ASSIGNMENT_SUM", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator("-=", "ASSIGNMENT_DIFFERENCE", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
 
         /* Assignment by product, quotient, and remainder */
-        Operator("*=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
-        Operator("/=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
-        Operator("%=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator("*=", "ASSIGNMENT_PRODUCT", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator("/=", "ASSIGNMENT_QUOTIENT", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator("%=", "ASSIGNMENT_REMAINDER", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
 
         /* Assignment by bitwise left shift and right shift */
-        Operator("<<=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
-        Operator(">>=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator("<<=", "ASSIGNMENT_BITWISE_LEFT_SHIFT", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator(">>=", "ASSIGNMENT_BITWISE_RIGHT_SHIFT", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
 
         /* Assignment by bitwise AND, XOR, and OR */
-        Operator("&=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
-        Operator("^=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
-        Operator("|=", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator("&=", "ASSIGNMENT_BITWISE_AND", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator("^=", "ASSIGNMENT_BITWISE_XOR", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
+        Operator("|=", "ASSIGNMENT_BITWISE_OR", P(14), Operator::Associativity::RIGHT, Operator::Type::BINARY),
 
 
         /* Comma */
-        Operator(",", P(15), Operator::Associativity::LEFT, Operator::Type::BINARY)
+        Operator(",", "COMMA", P(15), Operator::Associativity::LEFT, Operator::Type::BINARY)
 };
 #undef P
 
@@ -136,9 +136,10 @@ Operator::Operator() : noop(true)
 {
 }
 
-Operator::Operator(string op, int precedence, Operator::Associativity associativity,
+Operator::Operator(string op, string id, int precedence, Operator::Associativity associativity,
                    Operator::Type type) : noop(false),
                                           op(op),
+                                          id(id),
                                           precedence(precedence),
                                           associativity(associativity),
                                           type(type)
@@ -171,6 +172,11 @@ string Operator::get_op_short() const
         }
     }
     return short_name;
+}
+
+string Operator::get_id() const
+{
+    return id;
 }
 
 int Operator::get_precedence() const
@@ -237,10 +243,10 @@ Operator Operator::get_operator(bool all, bool postfix, string op)
     return Operator();
 }
 
-Operator Operator::get_operator_by_name(string op)
+Operator Operator::get_operator_by_id(string id)
 {
     for (auto op_obj: operators) {
-        if (op_obj.get_op() == op) {
+        if (op_obj.get_id() == id) {
             return op_obj;
         }
     }
