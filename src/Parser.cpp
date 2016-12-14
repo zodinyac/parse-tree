@@ -51,6 +51,16 @@ Node *Parser::parse_atom()
         Token::read_token(true, ss);
         return new Node(Token::Type::BRACKETS, node);
     }
+    if (token.get_type() == Token::Type::LEFTBRACE) {
+        Token::read_token(false, ss);
+        Node *node = parse_expression(1);
+        if (Token::get_token().get_type() != Token::Type::RIGHTBRACE) {
+            cerr << "Unmatched '{'." << endl;
+            exit(2);
+        }
+        Token::read_token(true, ss);
+        return new Node(Token::Type::BRACES, node);
+    }
 
     Token::read_token(true, ss);
     return new Node(token);
@@ -66,6 +76,9 @@ Node *Parser::parse_expression(int min_prec)
                 || token.get_type() == Token::Type::LEFTPAREN
                 || token.get_type() == Token::Type::UNOP)) {
             token = Token(Operator::get_operator_by_name("type_cast"));
+        } else if (atom_lhs && atom_lhs->getToken()->get_type() == Token::Type::PARENS
+                   && token.get_type() == Token::Type::LEFTBRACE) {
+            token = Token(Operator::get_operator_by_name("compound_literal"));
         } else if (atom_lhs && (atom_lhs->getToken()->get_type() == Token::Type::OTHER
                                 || (atom_lhs->getToken()->get_type() == Token::Type::SPECIALOP
                                     && atom_lhs->getToken()->get_op().get_op() == "array_subscribing"))

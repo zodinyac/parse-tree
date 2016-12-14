@@ -28,6 +28,12 @@ void Node::print()
             left->print();
         }
         cout << "]";
+    } else if (token.get_type() == Token::Type::BRACES) {
+        cout << "{";
+        if (left) {
+            left->print();
+        }
+        cout << "}";
     } else {
         if (left) {
             left->print();
