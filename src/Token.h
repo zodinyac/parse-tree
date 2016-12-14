@@ -53,7 +53,7 @@ private:
     static std::string read_other(std::stringstream &ss);
 
     static Token current_token;
-
+    static Token next_token;
     Token::Type type;
     Operator op;
     std::string other;

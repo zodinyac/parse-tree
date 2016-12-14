@@ -5,6 +5,7 @@
 using namespace std;
 
 Token Token::current_token;
+Token Token::next_token;
 
 Token::Token(Token::Type type) : type(type)
 {
@@ -99,6 +100,12 @@ Token &Token::get_token()
 
 void Token::read_token(bool all, stringstream &ss)
 {
+    if (next_token.get_type() != Token::Type::NONE) {
+        current_token = next_token;
+        next_token = Token();
+        return;
+    }
+
     char c;
     bool ok = static_cast<bool>(ss >> c);
 
@@ -145,7 +152,16 @@ void Token::read_token(bool all, stringstream &ss)
     }
 
     if (!op.empty()) {
-        current_token = Token(Operator::get_operator(all, postfix, op));
+        Operator oper = Operator::get_operator(all, postfix, op);
+        if (oper.get_id() == "TERNARY_?") {
+            current_token = Token(oper);
+            next_token = Token(Token::Type::LEFTPAREN);
+        } else if (oper.get_id() == "TERNARY_:") {
+            current_token = Token(Token::Type::RIGHTPAREN);
+            next_token = Token(oper);
+        } else {
+            current_token = Token(oper);
+        }
     } else {
         current_token = Token(read_other(ss));
     }

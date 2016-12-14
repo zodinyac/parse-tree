@@ -102,7 +102,8 @@ vector<Operator> Operator::operators = {
         Operator("||", "LOGICAL_OR", P(12), Operator::Associativity::LEFT, Operator::Type::BINARY),
 
         /* Ternary conditional ?: */
-        /* Not realized */
+        Operator("?", "TERNARY_?", P(13), Operator::Associativity::LEFT, Operator::Type::BINARY),
+        Operator(":", "TERNARY_:", P(13), Operator::Associativity::LEFT, Operator::Type::BINARY),
 
 
         /* Simple assignment */
