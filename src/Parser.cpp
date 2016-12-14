@@ -81,7 +81,8 @@ Node *Parser::parse_expression(int min_prec)
             token = Token(Operator::get_operator_by_name("compound_literal"));
         } else if (atom_lhs && (atom_lhs->getToken()->get_type() == Token::Type::OTHER
                                 || (atom_lhs->getToken()->get_type() == Token::Type::SPECIALOP
-                                    && atom_lhs->getToken()->get_op().get_op() == "array_subscribing"))
+                                    && (atom_lhs->getToken()->get_op().get_op() == "array_subscribing"
+                                        || atom_lhs->getToken()->get_op().get_op() == "function_call")))
             && token.get_type() == Token::Type::LEFTPAREN) {
             token = Token(Operator::get_operator_by_name("function_call"));
         } else if (atom_lhs && (atom_lhs->getToken()->get_type() == Token::Type::OTHER
