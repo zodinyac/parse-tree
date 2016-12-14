@@ -125,6 +125,12 @@ void Token::read_token(bool all, stringstream &ss)
     } else if (c == '}') {
         current_token = Token(Token::Type::RIGHTBRACE);
         return;
+    } else if (c == '\'') {
+        current_token = Token(read_char(ss));
+        return;
+    } else if (c == '"') {
+        current_token = Token(read_string(ss));
+        return;
     }
 
     ss.unget();
@@ -177,6 +183,45 @@ string Token::read_operator(bool all, bool postfix, stringstream &ss)
     }
 
     return op;
+}
+
+string Token::read_char(std::stringstream &ss)
+{
+    string other;
+
+    char c;
+    while (static_cast<bool>(ss >> noskipws >> c >> skipws) && (c != '\'')) {
+        other.push_back(c);
+    }
+
+    if (other.empty()) {
+        cerr << "Empty char literal." << endl;
+        exit(2);
+    }
+
+    if (c == '\'') {
+        return "\'" + other + "\'";
+    } else {
+        cerr << "Unmatched ' (char literal end symbol)." << endl;
+        exit(2);
+    }
+}
+
+string Token::read_string(std::stringstream &ss)
+{
+    string other;
+
+    char c;
+    while (static_cast<bool>(ss >> noskipws >> c >> skipws) && (c != '\"')) {
+        other.push_back(c);
+    }
+
+    if (c == '\"') {
+        return "\"" + other + "\"";
+    } else {
+        cerr << "Unmatched \" (string literal end symbol)." << endl;
+        exit(2);
+    }
 }
 
 string Token::read_other(std::stringstream &ss)

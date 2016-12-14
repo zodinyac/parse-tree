@@ -48,6 +48,8 @@ private:
         NUMBER
     };
     static std::string read_operator(bool all, bool postfix, std::stringstream &ss);
+    static std::string read_char(std::stringstream &ss);
+    static std::string read_string(std::stringstream &ss);
     static std::string read_other(std::stringstream &ss);
 
     static Token current_token;

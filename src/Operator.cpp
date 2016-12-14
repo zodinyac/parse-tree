@@ -12,7 +12,7 @@ vector<Operator> Operator::operators = {
         Operator("function_call", "FUNCTION_CALL", P(1), Operator::Associativity::LEFT, Operator::Type::SPECIAL),
 
         /* Array subscribing [] */
-        Operator("array_subscribing", "ARRAY_SUBSCRIBING", P(1), Operator::Associativity::LEFT, Operator::Type::SPECIAL),
+        Operator("array_subscribing", "", P(1), Operator::Associativity::LEFT, Operator::Type::SPECIAL),
 
         /* Structure and union member access */
         Operator(".", "MEMBER_ACCESS", P(1), Operator::Associativity::LEFT, Operator::Type::BINARY),
