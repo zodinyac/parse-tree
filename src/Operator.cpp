@@ -2,16 +2,19 @@
 using namespace std;
 
 vector<Operator> Operator::Operators = {
+// TODO: calculate maximal precedence automatically instead of using 16
+#define CALC_PRECEDENCE(Precedence) (16 - Precedence)
 #define UNARY_OPERATOR(Name, Spelling, Precedence, Associativity, Type) \
-        Operator(OperatorKind::UO_##Name, Spelling, Precedence, OperatorAssociativity::Associativity, OperatorType::Unary##Type),
+        Operator(OperatorKind::UO_##Name, Spelling, CALC_PRECEDENCE(Precedence), OperatorAssociativity::Associativity, OperatorType::Unary##Type),
 #define BINARY_OPERATOR(Name, Spelling, Precedence, Associativity) \
-        Operator(OperatorKind::BO_##Name, Spelling, Precedence, OperatorAssociativity::Associativity, OperatorType::Binary),
+        Operator(OperatorKind::BO_##Name, Spelling, CALC_PRECEDENCE(Precedence), OperatorAssociativity::Associativity, OperatorType::Binary),
 #define SPECIAL_OPERATOR(Name, Spelling, Precedence, Associativity) \
-        Operator(OperatorKind::SO_##Name, Spelling, Precedence, OperatorAssociativity::Associativity, OperatorType::Special),
+        Operator(OperatorKind::SO_##Name, Spelling, CALC_PRECEDENCE(Precedence), OperatorAssociativity::Associativity, OperatorType::Special),
 #include "OperatorKind.def"
 #undef SPECIAL_OPERATOR
 #undef BINARY_OPERATOR
 #undef UNARY_OPERATOR
+#undef CALC_PRECEDENCE
 };
 
 Operator::Operator()
