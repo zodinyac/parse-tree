@@ -1,108 +1,150 @@
+#include "Token.h"
 #include <cctype>
 #include <iostream>
-#include "Operator.h"
-#include "Token.h"
 using namespace std;
 
-Token Token::current_token;
-Token Token::next_token;
+Token Token::CurrentToken;
+Token Token::NextToken;
 
-Token::Token(Token::Type type) : type(type)
+Token::Token(TokenKind Kind) : Kind(Kind)
 {
 }
 
-Token::Token(Operator op) : op(op)
+Token::Token(const Operator *Op) : Op(Op)
 {
-    if (op.is_unary()) {
-        type = Token::Type::UNOP;
-    } else if (op.is_binary()) {
-        type = Token::Type::BINOP;
+    if (Op->isUnary()) {
+        Kind = TokenKind::UnOp;
+    } else if (Op->isBinary()) {
+        Kind = TokenKind::BinOp;
+    } else if (Op->isSpecial()) {
+        Kind = TokenKind::SpecialOp;
     } else {
-        type = Token::Type::SPECIALOP;
+        Kind = TokenKind::None;
     }
 }
 
-Token::Token(string other) : other(other)
+Token::Token(string Literal) : Literal(Literal)
 {
-    type = Token::Type::OTHER;
+    Kind = TokenKind::Literal;
 }
 
-Token::Type Token::get_type() const
+TokenKind Token::getKind() const
 {
-    return type;
+    return Kind;
 }
 
-void Token::set_type(Token::Type type)
+void Token::setKind(TokenKind Kind)
 {
-    this->type = type;
+    this->Kind = Kind;
 }
 
-Operator Token::get_op() const
+const Operator *Token::getOp() const
 {
-    return op;
+    return (Op ? Op : Operator::getOperatorNOP());
 }
 
-void Token::print()
+void Token::setOp(const Operator *Op)
 {
-    cout << string(*this);
+    this->Op = Op;
+}
+
+bool Token::is(TokenKind Kind) const
+{
+    return this->Kind == Kind;
+}
+
+bool Token::isNot(TokenKind Kind) const
+{
+    return !is(Kind);
+}
+
+bool Token::isOneOf(TokenKind Kind1, TokenKind Kind2) const
+{
+    return is(Kind1) || is(Kind2);
+}
+
+template <typename... Ts>
+bool Token::isOneOf(TokenKind Kind1, TokenKind Kind2, Ts... Kinds) const
+{
+    return is(Kind1) || isOneOf(Kind2, Kinds...);
+}
+
+bool Token::isLiteral() const
+{
+    return is(TokenKind::Literal);
+}
+
+bool Token::isAnyOp() const
+{
+    return isOneOf(TokenKind::UnOp, TokenKind::BinOp, TokenKind::SpecialOp);
+}
+
+bool Token::isNotOp() const
+{
+    return !isAnyOp();
+}
+
+bool Token::isSymbolicOp() const
+{
+    return isAnyOp() && isNot(TokenKind::SpecialOp);
 }
 
 Token::operator string() const
 {
-    switch (type) {
+    switch (Kind) {
         default:
-        case Token::Type::NONE:
+        case TokenKind::None:
             return "\n";
 
-        case Token::Type::LEFTPAREN:
+        case TokenKind::LeftParen:
             return "(";
 
-        case Token::Type::RIGHTPAREN:
+        case TokenKind::RightParen:
             return ")";
 
-        case Token::Type::PARENS:
+        case TokenKind::Parens:
             return "()";
 
-        case Token::Type::LEFTBRACKET:
+        case TokenKind::LeftBracket:
             return "[";
 
-        case Token::Type::RIGHTBRACKET:
+        case TokenKind::RightBracket:
             return "]";
 
-        case Token::Type::BRACKETS:
+        case TokenKind::Brackets:
             return "[]";
 
-        case Token::Type::LEFTBRACE:
+        case TokenKind::LeftBrace:
             return "{";
 
-        case Token::Type::RIGHTBRACE:
+        case TokenKind::RightBrace:
             return "}";
 
-        case Token::Type::BRACES:
+        case TokenKind::Braces:
             return "{}";
 
-        case Token::Type::UNOP:
-        case Token::Type::BINOP:
-            return op.get_op();
+        case TokenKind::UnOp:
+        case TokenKind::BinOp:
+            return Op->getSpelling();
 
-        case Token::Type::SPECIALOP:
-            return op.get_op_short();
+        case TokenKind::SpecialOp:
+            return Op->getSpellingShort();
 
-        case Token::Type::OTHER:
-            return other;
+        case TokenKind::Literal:
+            return Literal;
     }
 }
 
-Token &Token::get_token()
+Token &Token::getCurrentToken()
 {
-    return current_token;
+    return CurrentToken;
 }
 
-void Token::read_token(bool all, stringstream &ss)
+void Token::readNextToken(bool OpMustBeUnary, stringstream &ss)
 {
-    if (next_token.get_type() != Token::Type::NONE) {
-        current_token = next_token;
-        next_token = Token();
+    if (NextToken.isNot(TokenKind::None)) {
+        CurrentToken = NextToken;
+        NextToken = Token();
         return;
     }
 
@@ -110,77 +152,74 @@ void Token::read_token(bool all, stringstream &ss)
     bool ok = static_cast<bool>(ss >> c);
 
     if (!ok) {
-        current_token = Token();
+        CurrentToken = Token();
         return;
     }
 
     if (c == '(') {
-        current_token = Token(Token::Type::LEFTPAREN);
+        CurrentToken = Token(TokenKind::LeftParen);
         return;
     } else if (c == ')') {
-        current_token = Token(Token::Type::RIGHTPAREN);
+        CurrentToken = Token(TokenKind::RightParen);
         return;
     } else if (c == '[') {
-        current_token = Token(Token::Type::LEFTBRACKET);
+        CurrentToken = Token(TokenKind::LeftBracket);
         return;
     } else if (c == ']') {
-        current_token = Token(Token::Type::RIGHTBRACKET);
+        CurrentToken = Token(TokenKind::RightBracket);
         return;
     } else if (c == '{') {
-        current_token = Token(Token::Type::LEFTBRACE);
+        CurrentToken = Token(TokenKind::LeftBrace);
         return;
     } else if (c == '}') {
-        current_token = Token(Token::Type::RIGHTBRACE);
+        CurrentToken = Token(TokenKind::RightBrace);
         return;
     } else if (c == '\'') {
-        current_token = Token(read_char(ss));
+        CurrentToken = Token(ReadChar(ss));
         return;
     } else if (c == '"') {
-        current_token = Token(read_string(ss));
+        CurrentToken = Token(ReadString(ss));
         return;
     }
 
     ss.unget();
 
-    bool postfix = (current_token.get_type() == Token::Type::RIGHTPAREN
-                   || current_token.get_type() == Token::Type::RIGHTBRACKET
-                   || current_token.get_type() == Token::Type::OTHER);
-
-    string op;
-    if (Operator::is_operator_symbol(c)) {
-        op = read_operator(all, postfix, ss);
+    bool UnaryOpMustBePostfix = CurrentToken.isOneOf(TokenKind::RightParen, TokenKind::RightBracket, TokenKind::Literal);
+    string Spelling;
+    if (Operator::isOperatorSpellingSymbol(c)) {
+        Spelling = ReadOperator(OpMustBeUnary, UnaryOpMustBePostfix, ss);
     }
 
-    if (!op.empty()) {
-        Operator oper = Operator::get_operator(all, postfix, op);
-        if (oper.get_id() == "TERNARY_?") {
-            current_token = Token(oper);
-            next_token = Token(Token::Type::LEFTPAREN);
-        } else if (oper.get_id() == "TERNARY_:") {
-            current_token = Token(Token::Type::RIGHTPAREN);
-            next_token = Token(oper);
+    if (!Spelling.empty()) {
+        const Operator *Op = Operator::findOperator(Spelling, OpMustBeUnary, UnaryOpMustBePostfix);
+        if (Op->is(OperatorKind::BO_TernaryQuestion)) {
+            CurrentToken = Token(Op);
+            NextToken = Token(TokenKind::LeftParen);
+        } else if (Op->is(OperatorKind::BO_TernaryColon)) {
+            CurrentToken = Token(TokenKind::RightParen);
+            NextToken = Token(Op);
         } else {
-            current_token = Token(oper);
+            CurrentToken = Token(Op);
         }
     } else {
-        current_token = Token(read_other(ss));
+        CurrentToken = Token(ReadLiteral(ss));
     }
 }
 
-string Token::read_operator(bool all, bool postfix, stringstream &ss)
+string Token::ReadOperator(bool OpMustBeUnary, bool UnaryOpMustBePostfix, stringstream &ss)
 {
     string op;
-    bool is_first = true;
-    bool is_alpha = false;
+    bool IsFirst = true;
+    bool IsAlpha = false;
 
     char c;
     bool ok;
     while ((ok = static_cast<bool>(ss >> noskipws >> c >> skipws))
-           && ((!is_alpha && Operator::is_operator_symbol(c)) || (is_alpha && (isalnum(c) || c == '_')))) {
-        if (is_first) {
-            is_first = false;
+           && ((!IsAlpha && Operator::isOperatorSpellingSymbol(c)) || (IsAlpha && (isalnum(c) || c == '_')))) {
+        if (IsFirst) {
+            IsFirst = false;
             if (isalpha(c) || c == '_') {
-                is_alpha = true;
+                IsAlpha = true;
             }
         }
         op.push_back(c);
@@ -192,8 +231,8 @@ string Token::read_operator(bool all, bool postfix, stringstream &ss)
         ss.clear();
     }
 
-    is_alpha = !is_first && is_alpha && Operator::get_operator(all, postfix, op).isNoOp();
-    while (op.length() > 0 && (Operator::get_operator(all, postfix, op).isNoOp() || is_alpha)) {
+    IsAlpha = !IsFirst && IsAlpha && (Operator::findOperator(op, OpMustBeUnary, UnaryOpMustBePostfix) == nullptr);
+    while (op.length() > 0 && (Operator::findOperator(op, OpMustBeUnary, UnaryOpMustBePostfix) == nullptr || IsAlpha)) {
         ss.unget();
         op.pop_back();
     }
@@ -201,61 +240,53 @@ string Token::read_operator(bool all, bool postfix, stringstream &ss)
     return op;
 }
 
-string Token::read_char(std::stringstream &ss)
+string Token::ReadChar(std::stringstream &ss)
 {
-    string other;
+    string Literal;
 
     char c;
     while (static_cast<bool>(ss >> noskipws >> c >> skipws) && (c != '\'')) {
-        other.push_back(c);
+        Literal.push_back(c);
     }
 
-    if (other.empty()) {
+    if (Literal.empty()) {
         cerr << "Empty char literal." << endl;
         exit(2);
     }
 
     if (c == '\'') {
-        return "\'" + other + "\'";
+        return "\'" + Literal + "\'";
     } else {
         cerr << "Unmatched ' (char literal end symbol)." << endl;
         exit(2);
     }
 }
 
-string Token::read_string(std::stringstream &ss)
+string Token::ReadString(std::stringstream &ss)
 {
-    string other;
+    string Literal;
 
     char c;
     while (static_cast<bool>(ss >> noskipws >> c >> skipws) && (c != '\"')) {
-        other.push_back(c);
+        Literal.push_back(c);
     }
 
     if (c == '\"') {
-        return "\"" + other + "\"";
+        return "\"" + Literal + "\"";
     } else {
         cerr << "Unmatched \" (string literal end symbol)." << endl;
         exit(2);
     }
 }
 
-string Token::read_other(std::stringstream &ss)
+string Token::ReadLiteral(std::stringstream &ss)
 {
-    string other;
-    Token::NumberType type = Token::NumberType::UNKNOWN;
+    string Literal;
 
     char c;
     bool ok;
-    while ((ok = static_cast<bool>(ss >> noskipws >> c >> skipws)) && ((c == '_') || isalnum(c) || (type == Token::NumberType::NUMBER && c == '.'))) {
-        if (type == Token::NumberType::UNKNOWN) {
-            if (isdigit(c)) {
-                type = Token::NumberType::NUMBER;
-            } else {
-                type = Token::NumberType::NOT_NUMBER;
-            }
-        }
-        other.push_back(c);
+    while ((ok = static_cast<bool>(ss >> noskipws >> c >> skipws)) && ((c == '_') || isalnum(c))) {
+        Literal.push_back(c);
     }
 
     if (ok) {
@@ -264,5 +295,5 @@ string Token::read_other(std::stringstream &ss)
         ss.clear();
     }
 
-    return other;
+    return Literal;
 }

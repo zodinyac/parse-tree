@@ -1,62 +1,54 @@
 #ifndef PARSE_TREE_TOKEN_H
 #define PARSE_TREE_TOKEN_H
 
+#include "Operator.h"
+#include "TokenKind.h"
 #include <string>
 #include <sstream>
-#include "Operator.h"
 
 class Token
 {
 public:
-    enum class Type {
-        NONE,
-        LEFTPAREN,
-        RIGHTPAREN,
-        PARENS,
-        LEFTBRACKET,
-        RIGHTBRACKET,
-        BRACKETS,
-        LEFTBRACE,
-        RIGHTBRACE,
-        BRACES,
-        UNOP,
-        BINOP,
-        SPECIALOP,
-        OTHER
-    };
+    Token(TokenKind Kind = TokenKind::None);
+    explicit Token(const Operator *Op);
+    explicit Token(std::string Literal);
 
-    Token(Token::Type type = Token::Type::NONE);
-    explicit Token(Operator op);
-    explicit Token(std::string other);
+    TokenKind getKind() const;
+    void setKind(TokenKind Kind);
 
-    Token::Type get_type() const;
-    void set_type(Token::Type type);
+    const Operator *getOp() const;
+    void setOp(const Operator *Op);
 
-    Operator get_op() const;
+    bool is(TokenKind Kind) const;
+    bool isNot(TokenKind Kind) const;
+    bool isOneOf(TokenKind Kind1, TokenKind Kind2) const;
+    template <typename... Ts>
+    bool isOneOf(TokenKind Kind1, TokenKind Kind2, Ts... Kinds) const;
 
-    void print();
+    bool isLiteral() const;
+
+    bool isAnyOp() const;
+    bool isNotOp() const;
+    bool isSymbolicOp() const;
 
     operator std::string() const;
 
-    static Token &get_token();
-    static void read_token(bool all, std::stringstream &ss);
+    static Token &getCurrentToken();
+    static void readNextToken(bool OpMustBeUnary, std::stringstream &ss);
 
 private:
-    enum NumberType {
-        UNKNOWN,
-        NOT_NUMBER,
-        NUMBER
-    };
-    static std::string read_operator(bool all, bool postfix, std::stringstream &ss);
-    static std::string read_char(std::stringstream &ss);
-    static std::string read_string(std::stringstream &ss);
-    static std::string read_other(std::stringstream &ss);
+    TokenKind Kind;
+    const Operator *Op = nullptr;
+    std::string Literal;
 
-    static Token current_token;
-    static Token next_token;
-    Token::Type type;
-    Operator op;
-    std::string other;
+    static Token CurrentToken;
+    static Token NextToken;
+
+    static std::string ReadOperator(bool all, bool postfix, std::stringstream &ss);
+
+    static std::string ReadChar(std::stringstream &ss);
+    static std::string ReadString(std::stringstream &ss);
+    static std::string ReadLiteral(std::stringstream &ss);
 };
 
 

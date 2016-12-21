@@ -1,121 +1,109 @@
-#include <iostream>
-using namespace std;
-
 #include "Operator.h"
 #include "Parser.h"
 #include "Token.h"
+#include <iostream>
+using namespace std;
 
-Parser::Parser(string expression)
+Parser::Parser(string Expression)
 {
-    ss.str(expression);
+    ss.str(Expression);
 }
 
 Node *Parser::parse()
 {
     cout << "Parse expression: " << ss.str() << endl;
 
-    Token::read_token(false, ss);
-    return parse_expression(1);
+    Token::readNextToken(true, ss);
+    return parseExpression(1);
 }
 
-Node *Parser::parse_atom()
+Node *Parser::parseAtom()
 {
-    Token token = Token::get_token();
+    Token Tok = Token::getCurrentToken();
 
-    if (token.get_type() == Token::Type::NONE
-        || token.get_type() == Token::Type::RIGHTPAREN
-        || token.get_type() == Token::Type::RIGHTBRACKET
-        || token.get_type() == Token::Type::UNOP
-        || token.get_type() == Token::Type::BINOP
-        || token.get_type() == Token::Type::SPECIALOP) {
+    if (Tok.isOneOf(TokenKind::None, TokenKind::RightParen, TokenKind::RightBracket) || Tok.isAnyOp()) {
         return nullptr;
     }
 
-    if (token.get_type() == Token::Type::LEFTPAREN) {
-        Token::read_token(false, ss);
-        Node *node = parse_expression(1);
-        if (Token::get_token().get_type() != Token::Type::RIGHTPAREN) {
+    if (Tok.is(TokenKind::LeftParen)) {
+        Token::readNextToken(true, ss);
+        Node *node = parseExpression(1);
+        if (Token::getCurrentToken().isNot(TokenKind::RightParen)) {
             cerr << "Unmatched '('." << endl;
             exit(2);
         }
-        Token::read_token(true, ss);
-        return new Node(Token::Type::PARENS, node);
+        Token::readNextToken(false, ss);
+        return new Node(TokenKind::Parens, node);
     }
-    if (token.get_type() == Token::Type::LEFTBRACKET) {
-        Token::read_token(false, ss);
-        Node *node = parse_expression(1);
-        if (Token::get_token().get_type() != Token::Type::RIGHTBRACKET) {
+    if (Tok.is(TokenKind::LeftBracket)) {
+        Token::readNextToken(true, ss);
+        Node *node = parseExpression(1);
+        if (Token::getCurrentToken().isNot(TokenKind::RightBracket)) {
             cerr << "Unmatched '['." << endl;
             exit(2);
         }
-        Token::read_token(true, ss);
-        return new Node(Token::Type::BRACKETS, node);
+        Token::readNextToken(false, ss);
+        return new Node(TokenKind::Brackets, node);
     }
-    if (token.get_type() == Token::Type::LEFTBRACE) {
-        Token::read_token(false, ss);
-        Node *node = parse_expression(1);
-        if (Token::get_token().get_type() != Token::Type::RIGHTBRACE) {
+    if (Tok.is(TokenKind::LeftBrace)) {
+        Token::readNextToken(true, ss);
+        Node *node = parseExpression(1);
+        if (Token::getCurrentToken().isNot(TokenKind::RightBrace)) {
             cerr << "Unmatched '{'." << endl;
             exit(2);
         }
-        Token::read_token(true, ss);
-        return new Node(Token::Type::BRACES, node);
+        Token::readNextToken(false, ss);
+        return new Node(TokenKind::Braces, node);
     }
 
-    Token::read_token(true, ss);
-    return new Node(token);
+    Token::readNextToken(false, ss);
+    return new Node(Tok);
 }
 
-Node *Parser::parse_expression(int min_prec)
+Node *Parser::parseExpression(int MinPrecedence)
 {
-    Node *atom_lhs = parse_atom();
+    Node *Atom_LHS = parseAtom();
     while (true) {
-        Token token = Token::get_token();
+        Token Tok = Token::getCurrentToken();
 
-        if (atom_lhs) {
-            if (atom_lhs->getToken()->get_type() == Token::Type::PARENS) {
-                if (atom_lhs->getLeft()
-                    && atom_lhs->getLeft()->getToken()->get_op().get_id() == "DEREFERENCE"
-                    && token.get_type() == Token::Type::LEFTPAREN) {
-                    token = Token(Operator::get_operator_by_id("FUNCTION_CALL"));
-                } else if (token.get_type() == Token::Type::LEFTBRACE) {
-                    token = Token(Operator::get_operator_by_id("COMPOUND_LITERAL"));
-                } else if (token.get_type() == Token::Type::OTHER
-                           || token.get_type() == Token::Type::LEFTPAREN
-                           || token.get_type() == Token::Type::UNOP) {
-                    token = Token(Operator::get_operator_by_id("TYPE_CAST"));
+        if (Atom_LHS) {
+            if (Atom_LHS->getToken()->is(TokenKind::Parens)) {
+                if (Atom_LHS->getLeft()
+                    && Atom_LHS->getLeft()->getToken()->getOp()->is(OperatorKind::UO_Deref)
+                    && Tok.is(TokenKind::LeftParen)) {
+                    Tok = Token(Operator::getOperatorByKind(OperatorKind::SO_FuncCall));
+                } else if (Tok.is(TokenKind::LeftBrace)) {
+                    Tok = Token(Operator::getOperatorByKind(OperatorKind::SO_CompoundLiteral));
+                } else if (Tok.isOneOf(TokenKind::LeftParen, TokenKind::UnOp, TokenKind::Literal)) {
+                    Tok = Token(Operator::getOperatorByKind(OperatorKind::SO_TypeCast));
                 }
-            } else if ((atom_lhs->getToken()->get_type() == Token::Type::OTHER
-                        || atom_lhs->getToken()->get_op().get_id() == "ARRAY_SUBSCRIBING")
-                       && token.get_type() == Token::Type::LEFTBRACKET) {
-                token = Token(Operator::get_operator_by_id("ARRAY_SUBSCRIBING"));
-            } else if ((atom_lhs->getToken()->get_type() == Token::Type::OTHER
-                        || atom_lhs->getToken()->get_op().get_id() == "ARRAY_SUBSCRIBING"
-                        || atom_lhs->getToken()->get_op().get_id() == "FUNCTION_CALL")
-                       && token.get_type() == Token::Type::LEFTPAREN) {
-                token = Token(Operator::get_operator_by_id("FUNCTION_CALL"));
+            } else if ((Atom_LHS->getToken()->is(TokenKind::Literal)
+                        || Atom_LHS->getToken()->getOp()->is(OperatorKind::SO_ArraySubscribing))
+                       && Tok.is(TokenKind::LeftBracket)) {
+                Tok = Token(Operator::getOperatorByKind(OperatorKind::SO_ArraySubscribing));
+            } else if ((Atom_LHS->getToken()->is(TokenKind::Literal)
+                        || Atom_LHS->getToken()->getOp()->isOneOf(OperatorKind::SO_ArraySubscribing, OperatorKind::SO_FuncCall))
+                       && Tok.is(TokenKind::LeftParen)) {
+                Tok = Token(Operator::getOperatorByKind(OperatorKind::SO_FuncCall));
             }
         }
 
-        if (token.get_type() == Token::Type::NONE
-            || (token.get_type() != Token::Type::UNOP
-                && token.get_type() != Token::Type::BINOP
-                && token.get_type() != Token::Type::SPECIALOP)) {
+        if (Tok.is(TokenKind::None) || Tok.isNotOp()) {
             break;
         }
 
-        Operator op = token.get_op();
-        if (op.get_precedence() < min_prec) {
+        const Operator *Op = Tok.getOp();
+        if (Op->getPrecedence() < MinPrecedence) {
             break;
         }
 
-        if (token.get_op().isOp()) {
-            Token::read_token(true, ss);
+        if (Tok.isSymbolicOp()) {
+            Token::readNextToken(false, ss);
         }
-        int next_min_prec = op.get_precedence() + (op.get_associativity() == Operator::Associativity::LEFT);
-        Node *atom_rhs = parse_expression(next_min_prec);
-        atom_lhs = new Node(token, atom_lhs, atom_rhs);
+        int NextMinPrecedence = Op->getPrecedence() + Op->isLeftAssociativity();
+        Node *Atom_RHS = parseExpression(NextMinPrecedence);
+        Atom_LHS = new Node(Tok, Atom_LHS, Atom_RHS);
     }
 
-    return atom_lhs;
+    return Atom_LHS;
 }

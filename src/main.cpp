@@ -12,9 +12,9 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    Parser parser(argv[1]);
-    Node *root = parser.parse();
+    Parser Parser(argv[1]);
+    Node *RootNode = Parser.parse();
 
-    root->print();
-    root->print_pretty();
+    RootNode->print();
+    RootNode->print(true);
 }

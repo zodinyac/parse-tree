@@ -1,35 +1,39 @@
 #ifndef PARSE_TREE_NODE_H
 #define PARSE_TREE_NODE_H
 
+#include "Token.h"
 #include <deque>
 #include <string>
-#include "Token.h"
 
 class Node {
 public:
-    Node(Token token, Node *left = nullptr, Node *right = nullptr);
+    Node(Token Tok, Node *Left = nullptr, Node *Right = nullptr);
 
     const Token *getToken() const;
+    void setToken(Token Tok);
 
     Node *getLeft();
-    Node *getRight();
+    void setLeft(Node *Left = nullptr);
 
-    void print();
-    void print_pretty();
+    Node *getRight();
+    void setRight(Node *Right);
+
+    void print(bool Pretty = false) const;
 
     operator std::string() const;
 
 private:
-    int max_height(Node *node);
+    Token Tok;
+    Node *Left;
+    Node *Right;
 
-    void print_branches(int branch_len, int node_space_len, int start_len, int nodes_in_this_level, const std::deque<Node *> &nodes_queue);
-    void print_nodes(int branch_len, int node_space_len, int start_len, int nodes_in_this_level, const std::deque<Node *> &nodes_queue);
-    void print_leaves(int indent_space, int level, int nodes_in_this_level, const std::deque<Node *> &nodes_queue);
-    void print_pretty_internal(int level, int indent_space);
+    void printInternal() const;
+    void printPrettyInternal(int Level, int IndentSpace) const;
 
-    Token token;
-    Node *left;
-    Node *right;
+    int maxHeight(const Node *Node) const;
+    void printBranches(int BranchLen, int NodeSpaceLen, int StartLen, int NodesInThisLevel, const std::deque<const Node *> &NodesQueue) const;
+    void printNodes(int BranchLen, int NodeSpaceLen, int StartLen, int NodesInThisLevel, const std::deque<const Node *> &NodesQueue) const;
+    void printLeaves(int IndentSpace, int Level, int NodesInThisLevel, const std::deque<const Node *> &NodesQueue) const;
 };
 
 

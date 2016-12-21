@@ -1,0 +1,9 @@
+#ifndef PARSE_TREE_OPERATORASSOCIATIVITY_H
+#define PARSE_TREE_OPERATORASSOCIATIVITY_H
+
+enum class OperatorAssociativity {
+    Left,
+    Right
+};
+
+#endif //PARSE_TREE_OPERATORASSOCIATIVITY_H

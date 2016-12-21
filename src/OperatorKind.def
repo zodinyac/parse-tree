@@ -1,0 +1,172 @@
+#ifndef UNARY_OPERATOR
+#   define UNARY_OPERATOR(Name, Spelling, Precedence, Associativity, Type)
+#endif
+
+#ifndef BINARY_OPERATOR
+#   define BINARY_OPERATOR(Name, Spelling, Precedence, Associativity)
+#endif
+
+#ifndef SPECIAL_OPERATOR
+#   define SPECIAL_OPERATOR(Name, Spelling, Precedence, Associativity)
+#endif
+
+/* http://en.cppreference.com/w/c/language/operator_precedence */
+
+/*
+ * Precedence 1
+ * /
+/* Suffix/postfix increment and decrement */
+UNARY_OPERATOR(PostInc, "++", 1, Left, Postfix)
+UNARY_OPERATOR(PostDec, "--", 1, Left, Postfix)
+
+/* Function call () */
+SPECIAL_OPERATOR(FuncCall, "function_call", 1, Left)
+
+/* Array subscribing [] */
+SPECIAL_OPERATOR(ArraySubscribing, "array_subscribing", 1, Left)
+
+/* Structure and union member access */
+BINARY_OPERATOR(MemberAccess, ".", 1, Left)
+
+/* Structure and union member access through pointer */
+BINARY_OPERATOR(MemberAccessPtr, "->", 1, Left)
+
+/* Compound literal (type){list} */
+SPECIAL_OPERATOR(CompoundLiteral, "compound_literal", 1, Left)
+
+/*
+ * Precedence 2
+ */
+/* Prefix increment and decrement */
+UNARY_OPERATOR(PreInc, "++", 2, Right, Prefix)
+UNARY_OPERATOR(PreDec, "--", 2, Right, Prefix)
+
+/* Unary plus and minus */
+UNARY_OPERATOR(Plus, "+", 2, Right, Prefix)
+UNARY_OPERATOR(Minus, "-", 2, Right, Prefix)
+
+/* Logical NOT and bitwise NOT */
+UNARY_OPERATOR(LNot, "!", 2, Right, Prefix)
+UNARY_OPERATOR(Not, "~", 2, Right, Prefix)
+
+/* Type cast (type) */
+SPECIAL_OPERATOR(TypeCast, "type_cast", 2, Right)
+
+/* Indirection (dereference) */
+UNARY_OPERATOR(Deref, "*", 2, Right, Prefix)
+
+/* Address-of */
+UNARY_OPERATOR(AddrOf, "&", 2, Right, Prefix)
+
+/* Size-of */
+UNARY_OPERATOR(SizeOf, "sizeof", 2, Right, Prefix)
+
+/* Alignment requirement */
+UNARY_OPERATOR(AlignOf, "_Alignof", 2, Right, Prefix)
+
+/*
+ * Precedence 3
+ */
+/* Multiplication, division, and remainder */
+BINARY_OPERATOR(Mul, "*", 3, Left)
+BINARY_OPERATOR(Div, "/", 3, Left)
+BINARY_OPERATOR(Rem, "%", 3, Left)
+
+/*
+ * Precedence 4
+ */
+/* Addition and subtraction */
+BINARY_OPERATOR(Add, "+", 4, Left)
+BINARY_OPERATOR(Sub, "-", 4, Left)
+
+/*
+ * Precedence 5
+ */
+/* Bitwise left shift and right shift */
+BINARY_OPERATOR(Shl, "<<", 5, Left)
+BINARY_OPERATOR(Shr, ">>", 5, Left)
+
+/*
+ * Precedence 6
+ */
+/* For relational operators < and ≤ respectively */
+BINARY_OPERATOR(LT, "<", 6, Left)
+BINARY_OPERATOR(LE, "<=", 6, Left)
+
+/* For relational operators > and ≥ respectively */
+BINARY_OPERATOR(GT, ">", 6, Left)
+BINARY_OPERATOR(GE, ">=", 6, Left)
+
+/*
+ * Precedence 7
+ */
+/* For relational = and ≠ respectively */
+BINARY_OPERATOR(EQ, "==", 7, Left)
+BINARY_OPERATOR(NE, "!=", 7, Left)
+
+/*
+ * Precedence 8
+ */
+/* Bitwise AND */
+BINARY_OPERATOR(And, "&", 8, Left)
+
+/*
+ * Precedence 9
+ */
+/* Bitwise XOR (exclusive or) */
+BINARY_OPERATOR(Xor, "^", 9, Left)
+
+/*
+ * Precedence 10
+ */
+/* Bitwise OR (inclusive or) */
+BINARY_OPERATOR(Or, "|", 10, Left)
+
+/*
+ * Precedence 11
+ */
+/* Logical AND */
+BINARY_OPERATOR(LAnd, "&&", 11, Left)
+
+/*
+ * Precedence 12
+ */
+/* Logical OR */
+BINARY_OPERATOR(LOr, "||", 12, Left)
+
+/*
+ * Precedence 13
+ */
+/* Ternary conditional ?: */
+BINARY_OPERATOR(TernaryQuestion, "?", 13, Left)
+BINARY_OPERATOR(TernaryColon, ":", 13, Left)
+
+/*
+ * Precedence 14
+ */
+/* Simple assignment */
+BINARY_OPERATOR(Assign, "=", 14, Right)
+
+/* Assignment by sum and difference */
+BINARY_OPERATOR(AddAssign, "+=", 14, Right)
+BINARY_OPERATOR(SubAssign, "-=", 14, Right)
+
+/* Assignment by product, quotient, and remainder */
+BINARY_OPERATOR(MulAssign, "*=", 14, Right)
+BINARY_OPERATOR(DivAssign, "/=", 14, Right)
+BINARY_OPERATOR(RemAssign, "%=", 14, Right)
+
+/* Assignment by bitwise left shift and right shift */
+BINARY_OPERATOR(ShlAssign, "<<=", 14, Right)
+BINARY_OPERATOR(ShrAssign, ">>=", 14, Right)
+
+/* Assignment by bitwise AND, XOR, and OR */
+BINARY_OPERATOR(AndAssign, "&=", 14, Right)
+BINARY_OPERATOR(XorAssign, "^=", 14, Right)
+BINARY_OPERATOR(OrAssign, "|=", 14, Right)
+
+/*
+ * Precedence 15
+ */
+/* Comma */
+BINARY_OPERATOR(Comma, ",", 15, Left)

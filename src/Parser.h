@@ -1,20 +1,20 @@
 #ifndef PARSE_TREE_PARSER_H
 #define PARSE_TREE_PARSER_H
 
+#include "Node.h"
 #include <string>
 #include <sstream>
-#include "Node.h"
 
 class Parser
 {
 public:
-    Parser(std::string expression);
+    Parser(std::string Expression);
 
     Node *parse();
 
 private:
-    Node *parse_atom();
-    Node *parse_expression(int min_prec);
+    Node *parseAtom();
+    Node *parseExpression(int MinPrecedence);
 
     std::stringstream ss;
 };

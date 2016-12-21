@@ -1,57 +1,56 @@
 #ifndef PARSE_TREE_OPERATOR_H
 #define PARSE_TREE_OPERATOR_H
 
+#include "OperatorAssociativity.h"
+#include "OperatorKind.h"
+#include "OperatorType.h"
 #include <string>
 #include <vector>
 
 class Operator
 {
 public:
-    enum class Associativity {
-        LEFT,
-        RIGHT
-    };
-    enum class Type {
-        UNARY,
-        UNARY_POSTFIX,
-        BINARY,
-        SPECIAL
-    };
-
     Operator();
-    Operator(std::string op, std::string id, int precedence = 0,
-             Operator::Associativity associativity = Operator::Associativity::LEFT,
-             Operator::Type type = Operator::Type::SPECIAL);
+    Operator(OperatorKind Kind, std::string Spelling, int Precedence,
+             OperatorAssociativity Associativity, OperatorType Type);
 
-    bool isOp() const;
-    bool isNoOp() const;
+    OperatorKind getKind() const;
+    bool is(OperatorKind Kind) const;
+    bool isNot(OperatorKind Kind) const;
+    bool isOneOf(OperatorKind Kind1, OperatorKind Kind2) const;
+    template <typename... Ts>
+    bool isOneOf(OperatorKind Kind1, OperatorKind Kind2, Ts... Kinds) const;
 
-    std::string get_op() const;
-    std::string get_op_short() const;
-    std::string get_id() const;
-    int get_precedence() const;
-    Operator::Associativity get_associativity() const;
-    Operator::Type get_type() const;
+    std::string getSpelling() const;
+    std::string getSpellingShort() const;
 
-    bool is_unary() const;
-    bool is_unary_prefix() const;
-    bool is_unary_postfix() const;
-    bool is_binary() const;
+    int getPrecedence() const;
 
-    static Operator get_operator(bool all, bool postfix, std::string op);
-    static Operator get_operator_by_id(std::string id);
-    static bool is_operator_symbol(char c);
+    OperatorAssociativity getAssociativity() const;
+    bool isLeftAssociativity() const;
+    bool isRightAssociativity() const;
+
+    OperatorType getType() const;
+    bool isUnary() const;
+    bool isUnaryPrefix() const;
+    bool isUnaryPostfix() const;
+    bool isBinary() const;
+    bool isSpecial() const;
+
+    static const Operator *findOperator(std::string Spelling, bool OpMustBeUnary, bool UnaryOpMustBePostfix);
+    static const Operator *getOperatorByKind(OperatorKind Kind);
+    static const Operator *getOperatorNOP();
+
+    static bool isOperatorSpellingSymbol(char c);
 
 private:
-    static std::vector<Operator> operators;
+    OperatorKind Kind = OperatorKind::NOP;
+    std::string Spelling;
+    int Precedence = 0;
+    OperatorAssociativity Associativity = OperatorAssociativity::Left;
+    OperatorType Type = OperatorType::Special;
 
-    bool noop = true;
-
-    std::string op = "";
-    std::string id = "";
-    int precedence = 0;
-    Operator::Associativity associativity;
-    Operator::Type type;
+    static std::vector<Operator> Operators;
 };
 
 

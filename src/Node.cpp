@@ -1,152 +1,170 @@
+#include "Node.h"
 #include <cmath>
 #include <iomanip>
 #include <iostream>
 using namespace std;
 
-#include "Node.h"
-
-Node::Node(Token token, Node *left, Node *right) : token(token), left(left), right(right)
+Node::Node(Token Tok, Node *Left, Node *Right) : Tok(Tok), Left(Left), Right(Right)
 {
 }
 
 const Token *Node::getToken() const
 {
-    return &token;
+    return &Tok;
+}
+
+void Node::setToken(Token Tok)
+{
+    this->Tok = Tok;
 }
 
 Node *Node::getLeft()
 {
-    return left;
+    return Left;
+}
+
+void Node::setLeft(Node *Left)
+{
+    this->Left = Left;
 }
 
 Node *Node::getRight()
 {
-    return right;
+    return Right;
 }
 
-void Node::print()
+void Node::setRight(Node *Right)
 {
-    if (token.get_type() == Token::Type::PARENS) {
-        cout << "(";
-        if (left) {
-            left->print();
-        }
-        cout << ")";
-    } else if (token.get_type() == Token::Type::BRACKETS) {
-        cout << "[";
-        if (left) {
-            left->print();
-        }
-        cout << "]";
-    } else if (token.get_type() == Token::Type::BRACES) {
-        cout << "{";
-        if (left) {
-            left->print();
-        }
-        cout << "}";
+    this->Right = Right;
+}
+
+void Node::print(bool Pretty) const
+{
+    if (Pretty) {
+        printPrettyInternal(1, 0);
     } else {
-        if (left) {
-            left->print();
-        }
-        if (token.get_type() == Token::Type::OTHER || token.get_op().isOp()) {
-            if (token.get_op().is_binary()) {
-                cout << " ";
-            }
-            token.print();
-            if (token.get_op().is_binary()) {
-                cout << " ";
-            }
-        }
-        if (right) {
-            right->print();
-        }
+        printInternal();
     }
-}
-
-void Node::print_pretty()
-{
-    print_pretty_internal(1, 0);
 }
 
 Node::operator string() const
 {
-    return token;
+    return Tok;
+}
+
+void Node::printInternal() const
+{
+    if (Tok.is(TokenKind::Parens)) {
+        cout << "(";
+        if (Left) {
+            Left->printInternal();
+        }
+        cout << ")";
+    } else if (Tok.is(TokenKind::Brackets)) {
+        cout << "[";
+        if (Left) {
+            Left->printInternal();
+        }
+        cout << "]";
+    } else if (Tok.is(TokenKind::Braces)) {
+        cout << "{";
+        if (Left) {
+            Left->printInternal();
+        }
+        cout << "}";
+    } else {
+        if (Left) {
+            Left->printInternal();
+        }
+        if (Tok.isSymbolicOp() || Tok.isLiteral()) {
+            if (Tok.is(TokenKind::BinOp)) {
+                cout << " ";
+            }
+            cout << string(Tok);
+            if (Tok.is(TokenKind::BinOp)) {
+                cout << " ";
+            }
+        }
+        if (Right) {
+            Right->printInternal();
+        }
+    }
 }
 
 /* http://articles.leetcode.com/how-to-pretty-print-binary-tree/ */
-int Node::max_height(Node *node)
+int Node::maxHeight(const Node *Node) const
 {
-    if (!node) {
+    if (!Node) {
         return 0;
     }
 
-    int left_height = max_height(node->left);
-    int right_height = max_height(node->right);
+    int LeftHeight = maxHeight(Node->Left);
+    int RightHeight = maxHeight(Node->Right);
 
-    return (left_height > right_height) ? left_height + 1: right_height + 1;
+    return LeftHeight > RightHeight ? LeftHeight + 1 : RightHeight + 1;
 }
 
-void Node::print_branches(int branch_len, int node_space_len, int start_len, int nodes_in_this_level, const deque<Node *> &nodes_queue)
+void Node::printBranches(int BranchLen, int NodeSpaceLen, int StartLen, int NodesInThisLevel, const std::deque<const Node *> &NodesQueue) const
 {
-    auto iter = nodes_queue.cbegin();
-    for (int i = 0; i < nodes_in_this_level / 2; i++) {
-        cout << ((i == 0) ? setw(start_len - 1) : setw(node_space_len - 2)) << "" << ((*iter++) ? "/" : " ");
-        cout << setw(2 * branch_len + 2) << "" << ((*iter++) ? "\\" : " ");
+    auto iter = NodesQueue.cbegin();
+    for (int i = 0; i < NodesInThisLevel / 2; i++) {
+        cout << ((i == 0) ? setw(StartLen - 1) : setw(NodeSpaceLen - 2)) << "" << ((*iter++) ? "/" : " ");
+        cout << setw(2 * BranchLen + 2) << "" << ((*iter++) ? "\\" : " ");
     }
     cout << endl;
 }
 
-void Node::print_nodes(int branch_len, int node_space_len, int start_len, int nodes_in_this_level, const deque<Node *> &nodes_queue)
+void Node::printNodes(int BranchLen, int NodeSpaceLen, int StartLen, int NodesInThisLevel, const std::deque<const Node *> &NodesQueue) const
 {
-    auto iter = nodes_queue.cbegin();
-    for (int i = 0; i < nodes_in_this_level; i++, iter++) {
-        cout << ((i == 0) ? setw(start_len) : setw(node_space_len)) << "" << ((*iter && (*iter)->left) ? setfill('_') : setfill(' '));
-        cout << setw(branch_len + 2) << ((*iter) ? string(**iter) : "");
-        cout << ((*iter && (*iter)->right) ? setfill('_') : setfill(' ')) << setw(branch_len) << "" << setfill(' ');
+    auto iter = NodesQueue.cbegin();
+    for (int i = 0; i < NodesInThisLevel; i++, iter++) {
+        cout << ((i == 0) ? setw(StartLen) : setw(NodeSpaceLen)) << "" << ((*iter && (*iter)->Left) ? setfill('_') : setfill(' '));
+        cout << setw(BranchLen + 2) << ((*iter) ? string(**iter) : "");
+        cout << ((*iter && (*iter)->Right) ? setfill('_') : setfill(' ')) << setw(BranchLen) << "" << setfill(' ');
     }
     cout << endl;
 }
 
-void Node::print_leaves(int indent_space, int level, int nodes_in_this_level, const deque<Node *> &nodes_queue)
+void Node::printLeaves(int IndentSpace, int Level, int NodesInThisLevel, const std::deque<const Node *> &NodesQueue) const
 {
-    auto iter = nodes_queue.cbegin();
-    for (int i = 0; i < nodes_in_this_level; i++, iter++) {
-        cout << ((i == 0) ? setw(indent_space + 2) : setw(2 * level+2)) << ((*iter) ? string(**iter) : "");
+    auto iter = NodesQueue.cbegin();
+    for (int i = 0; i < NodesInThisLevel; i++, iter++) {
+        cout << ((i == 0) ? setw(IndentSpace + 2) : setw(2 * Level + 2)) << ((*iter) ? string(**iter) : "");
     }
     cout << endl;
 }
 
-void Node::print_pretty_internal(int level, int indent_space)
+void Node::printPrettyInternal(int Level, int IndentSpace) const
 {
-    int h = max_height(this);
-    int nodes_in_this_level = 1;
+    int h = maxHeight(this);
+    int NodesInThisLevel = 1;
 
-    int branch_len = 2 * (static_cast<int>(pow(2.0, h)) - 1) - (3 - level) * static_cast<int>(pow(2.0, h - 1));
-    int node_space_len = 2 + (level + 1) * static_cast<int>(pow(2.0, h));
-    int start_len = branch_len + (3 - level) + indent_space;
+    int BranchLen = 2 * (static_cast<int>(pow(2.0, h)) - 1) - (3 - Level) * static_cast<int>(pow(2.0, h - 1));
+    int NodeSpaceLen = 2 + (Level + 1) * static_cast<int>(pow(2.0, h));
+    int StartLen = BranchLen + (3 - Level) + IndentSpace;
 
-    deque<Node *> nodes_queue;
-    nodes_queue.push_back(this);
+    deque<const Node *> NodesQueue;
+    NodesQueue.push_back(this);
     for (int r = 1; r < h; r++) {
-        print_branches(branch_len, node_space_len, start_len, nodes_in_this_level, nodes_queue);
-        branch_len = branch_len / 2 - 1;
-        node_space_len = node_space_len / 2 + 1;
-        start_len = branch_len + (3 - level) + indent_space;
-        print_nodes(branch_len, node_space_len, start_len, nodes_in_this_level, nodes_queue);
+        printBranches(BranchLen, NodeSpaceLen, StartLen, NodesInThisLevel, NodesQueue);
+        BranchLen = BranchLen / 2 - 1;
+        NodeSpaceLen = NodeSpaceLen / 2 + 1;
+        StartLen = BranchLen + (3 - Level) + IndentSpace;
+        printNodes(BranchLen, NodeSpaceLen, StartLen, NodesInThisLevel, NodesQueue);
 
-        for (int i = 0; i < nodes_in_this_level; i++) {
-            Node *curr_node = nodes_queue.front();
-            nodes_queue.pop_front();
-            if (curr_node) {
-                nodes_queue.push_back(curr_node->left);
-                nodes_queue.push_back(curr_node->right);
+        for (int i = 0; i < NodesInThisLevel; i++) {
+            const Node *CurrentNode = NodesQueue.front();
+            NodesQueue.pop_front();
+            if (CurrentNode) {
+                NodesQueue.push_back(CurrentNode->Left);
+                NodesQueue.push_back(CurrentNode->Right);
             } else {
-                nodes_queue.push_back(nullptr);
-                nodes_queue.push_back(nullptr);
+                NodesQueue.push_back(nullptr);
+                NodesQueue.push_back(nullptr);
             }
         }
-        nodes_in_this_level *= 2;
+        NodesInThisLevel *= 2;
     }
-    print_branches(branch_len, node_space_len, start_len, nodes_in_this_level, nodes_queue);
-    print_leaves(indent_space, level, nodes_in_this_level, nodes_queue);
+    printBranches(BranchLen, NodeSpaceLen, StartLen, NodesInThisLevel, NodesQueue);
+    printLeaves(IndentSpace, Level, NodesInThisLevel, NodesQueue);
 }
