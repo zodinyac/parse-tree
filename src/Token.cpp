@@ -208,7 +208,7 @@ void Token::readNextToken(bool OpMustBeUnary, stringstream &ss)
 
 string Token::ReadOperator(bool OpMustBeUnary, bool UnaryOpMustBePostfix, stringstream &ss)
 {
-    string op;
+    string Spelling;
     bool IsFirst = true;
     bool IsAlpha = false;
 
@@ -222,7 +222,7 @@ string Token::ReadOperator(bool OpMustBeUnary, bool UnaryOpMustBePostfix, string
                 IsAlpha = true;
             }
         }
-        op.push_back(c);
+        Spelling.push_back(c);
     }
 
     if (ok) {
@@ -231,13 +231,13 @@ string Token::ReadOperator(bool OpMustBeUnary, bool UnaryOpMustBePostfix, string
         ss.clear();
     }
 
-    IsAlpha = !IsFirst && IsAlpha && (Operator::findOperator(op, OpMustBeUnary, UnaryOpMustBePostfix) == nullptr);
-    while (op.length() > 0 && (Operator::findOperator(op, OpMustBeUnary, UnaryOpMustBePostfix) == nullptr || IsAlpha)) {
+    IsAlpha = !IsFirst && IsAlpha && (Operator::findOperator(Spelling, OpMustBeUnary, UnaryOpMustBePostfix) == nullptr);
+    while (Spelling.length() > 0 && (Operator::findOperator(Spelling, OpMustBeUnary, UnaryOpMustBePostfix) == nullptr || IsAlpha)) {
         ss.unget();
-        op.pop_back();
+        Spelling.pop_back();
     }
 
-    return op;
+    return Spelling;
 }
 
 string Token::ReadChar(std::stringstream &ss)
