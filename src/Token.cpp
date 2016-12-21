@@ -245,7 +245,13 @@ string Token::ReadChar(std::stringstream &ss)
     string Literal;
 
     char c;
-    while (static_cast<bool>(ss >> noskipws >> c >> skipws) && (c != '\'')) {
+    bool SkipNext = false;
+    while (static_cast<bool>(ss >> noskipws >> c >> skipws) && (SkipNext || c != '\'')) {
+        if (c == '\\') {
+            SkipNext = true;
+        } else if (SkipNext) {
+            SkipNext = false;
+        }
         Literal.push_back(c);
     }
 
@@ -267,7 +273,13 @@ string Token::ReadString(std::stringstream &ss)
     string Literal;
 
     char c;
-    while (static_cast<bool>(ss >> noskipws >> c >> skipws) && (c != '\"')) {
+    bool SkipNext = false;
+    while (static_cast<bool>(ss >> noskipws >> c >> skipws) && (SkipNext || c != '\"')) {
+        if (c == '\\') {
+            SkipNext = true;
+        } else if (SkipNext) {
+            SkipNext = false;
+        }
         Literal.push_back(c);
     }
 
