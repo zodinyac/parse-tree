@@ -34,7 +34,7 @@ public:
     operator std::string() const;
 
     static Token &getCurrentToken();
-    static void readNextToken(bool OpMustBeUnary, std::stringstream &ss);
+    static void readNextToken(bool OpMustBeOnlyUnary, std::stringstream &ss);
 
 private:
     TokenKind Kind;
@@ -44,7 +44,7 @@ private:
     static Token CurrentToken;
     static Token NextToken;
 
-    static std::string ReadOperator(bool all, bool postfix, std::stringstream &ss);
+    static std::string ReadOperator(bool OpMustBeOnlyUnary, bool UnaryOpMustBePostfix, std::stringstream &ss);
 
     static std::string ReadChar(std::stringstream &ss);
     static std::string ReadString(std::stringstream &ss);

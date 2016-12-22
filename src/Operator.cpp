@@ -124,7 +124,7 @@ bool Operator::isSpecial() const
     return Type == OperatorType::Special;
 }
 
-const Operator *Operator::findOperator(std::string Spelling, bool OpMustBeUnary, bool UnaryOpMustBePostfix)
+const Operator *Operator::findOperator(std::string Spelling, bool OpMustBeOnlyUnary, bool UnaryOpMustBePostfix)
 {
     for (auto &Op: Operators) {
         if (Op.isSpecial()) {
@@ -143,7 +143,7 @@ const Operator *Operator::findOperator(std::string Spelling, bool OpMustBeUnary,
             }
         }
 
-        if (!OpMustBeUnary && Op.isBinary()) {
+        if (!OpMustBeOnlyUnary && Op.isBinary()) {
             return &Op;
         }
     }

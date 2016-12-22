@@ -37,7 +37,7 @@ public:
     bool isBinary() const;
     bool isSpecial() const;
 
-    static const Operator *findOperator(std::string Spelling, bool OpMustBeUnary, bool UnaryOpMustBePostfix);
+    static const Operator *findOperator(std::string Spelling, bool OpMustBeOnlyUnary, bool UnaryOpMustBePostfix);
     static const Operator *getOperatorByKind(OperatorKind Kind);
     static const Operator *getOperatorNOP();
 

@@ -140,7 +140,7 @@ Token &Token::getCurrentToken()
     return CurrentToken;
 }
 
-void Token::readNextToken(bool OpMustBeUnary, stringstream &ss)
+void Token::readNextToken(bool OpMustBeOnlyUnary, stringstream &ss)
 {
     if (NextToken.isNot(TokenKind::None)) {
         CurrentToken = NextToken;
@@ -184,14 +184,15 @@ void Token::readNextToken(bool OpMustBeUnary, stringstream &ss)
 
     ss.unget();
 
-    bool UnaryOpMustBePostfix = CurrentToken.isOneOf(TokenKind::RightParen, TokenKind::RightBracket, TokenKind::Literal);
+    bool UnaryOpMustBePostfix = CurrentToken.isOneOf(TokenKind::RightParen, TokenKind::RightBracket, TokenKind::Literal)
+                                || CurrentToken.getOp()->isUnaryPostfix();
     string Spelling;
     if (Operator::isOperatorSpellingSymbol(c)) {
-        Spelling = ReadOperator(OpMustBeUnary, UnaryOpMustBePostfix, ss);
+        Spelling = ReadOperator(OpMustBeOnlyUnary, UnaryOpMustBePostfix, ss);
     }
 
     if (!Spelling.empty()) {
-        const Operator *Op = Operator::findOperator(Spelling, OpMustBeUnary, UnaryOpMustBePostfix);
+        const Operator *Op = Operator::findOperator(Spelling, OpMustBeOnlyUnary, UnaryOpMustBePostfix);
         if (Op->is(OperatorKind::BO_TernaryQuestion)) {
             CurrentToken = Token(Op);
             NextToken = Token(TokenKind::LeftParen);
@@ -206,7 +207,7 @@ void Token::readNextToken(bool OpMustBeUnary, stringstream &ss)
     }
 }
 
-string Token::ReadOperator(bool OpMustBeUnary, bool UnaryOpMustBePostfix, stringstream &ss)
+string Token::ReadOperator(bool OpMustBeOnlyUnary, bool UnaryOpMustBePostfix, stringstream &ss)
 {
     string Spelling;
     bool IsFirst = true;
@@ -231,8 +232,8 @@ string Token::ReadOperator(bool OpMustBeUnary, bool UnaryOpMustBePostfix, string
         ss.clear();
     }
 
-    IsAlpha = !IsFirst && IsAlpha && (Operator::findOperator(Spelling, OpMustBeUnary, UnaryOpMustBePostfix) == nullptr);
-    while (Spelling.length() > 0 && (Operator::findOperator(Spelling, OpMustBeUnary, UnaryOpMustBePostfix) == nullptr || IsAlpha)) {
+    IsAlpha = !IsFirst && IsAlpha && (Operator::findOperator(Spelling, OpMustBeOnlyUnary, UnaryOpMustBePostfix) == nullptr);
+    while (Spelling.length() > 0 && (Operator::findOperator(Spelling, OpMustBeOnlyUnary, UnaryOpMustBePostfix) == nullptr || IsAlpha)) {
         ss.unget();
         Spelling.pop_back();
     }
