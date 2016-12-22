@@ -82,7 +82,7 @@ Node *Parser::parseExpression(int MinPrecedence)
                        && Tok.is(TokenKind::LeftBracket)) {
                 Tok = Token(Operator::getOperatorByKind(OperatorKind::SO_ArraySubscribing));
             } else if ((Atom_LHS->getToken()->is(TokenKind::Literal)
-                        || Atom_LHS->getToken()->getOp()->isOneOf(OperatorKind::SO_ArraySubscribing, OperatorKind::SO_FuncCall))
+                        || Atom_LHS->getToken()->getOp()->getPrecedence() == Operator::getOperatorByKind(OperatorKind::SO_FuncCall)->getPrecedence())
                        && Tok.is(TokenKind::LeftParen)) {
                 Tok = Token(Operator::getOperatorByKind(OperatorKind::SO_FuncCall));
             }
