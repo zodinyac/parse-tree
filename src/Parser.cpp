@@ -85,6 +85,8 @@ Node *Parser::parseExpression(int MinPrecedence)
                         || Atom_LHS->getToken()->getOp()->getPrecedence() == Operator::getOperatorByKind(OperatorKind::SO_FuncCall)->getPrecedence())
                        && Tok.is(TokenKind::LeftParen)) {
                 Tok = Token(Operator::getOperatorByKind(OperatorKind::SO_FuncCall));
+            } else if (Atom_LHS->getToken()->is(TokenKind::Literal) && Tok.is(TokenKind::Literal)) {
+                Tok = Token(Operator::getOperatorByKind(OperatorKind::SO_ConcatenateLiteral));
             }
         }
 

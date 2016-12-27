@@ -81,9 +81,11 @@ void Node::printInternal() const
                 cout << " ";
             }
             cout << string(Tok);
-            if (Tok.is(TokenKind::BinOp)) {
+            if (Tok.is(TokenKind::BinOp) && Right) {
                 cout << " ";
             }
+        } else if (Tok.getOp()->is(OperatorKind::SO_ConcatenateLiteral)) {
+            cout << " ";
         }
         if (Right) {
             Right->printInternal();

@@ -34,6 +34,9 @@ BINARY_OPERATOR(MemberAccessPtr, "->", 1, Left)
 /* Compound literal (type){list} */
 SPECIAL_OPERATOR(CompoundLiteral, "compound_literal", 1, Left)
 
+/* Special operator for concatenate literals (for example, in types: (const int *)) */
+SPECIAL_OPERATOR(ConcatenateLiteral, "concatenate_literal", 1, Left)
+
 /*
  * Precedence 2
  */
