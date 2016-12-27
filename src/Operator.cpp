@@ -50,12 +50,6 @@ bool Operator::isOneOf(OperatorKind Kind1, OperatorKind Kind2) const
     return is(Kind1) || is(Kind2);
 }
 
-template <typename... Ts>
-bool Operator::isOneOf(OperatorKind Kind1, OperatorKind Kind2, Ts... Kinds) const
-{
-    return is(Kind1) || isOneOf(Kind2, Kinds...);
-}
-
 std::string Operator::getSpelling() const
 {
     return Spelling;

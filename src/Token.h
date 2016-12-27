@@ -23,7 +23,10 @@ public:
     bool isNot(TokenKind Kind) const;
     bool isOneOf(TokenKind Kind1, TokenKind Kind2) const;
     template <typename... Ts>
-    bool isOneOf(TokenKind Kind1, TokenKind Kind2, Ts... Kinds) const;
+    bool isOneOf(TokenKind Kind1, TokenKind Kind2, Ts... Kinds) const
+    {
+        return is(Kind1) || isOneOf(Kind2, Kinds...);
+    }
 
     bool isLiteral() const;
 

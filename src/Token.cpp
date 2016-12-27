@@ -63,12 +63,6 @@ bool Token::isOneOf(TokenKind Kind1, TokenKind Kind2) const
     return is(Kind1) || is(Kind2);
 }
 
-template <typename... Ts>
-bool Token::isOneOf(TokenKind Kind1, TokenKind Kind2, Ts... Kinds) const
-{
-    return is(Kind1) || isOneOf(Kind2, Kinds...);
-}
-
 bool Token::isLiteral() const
 {
     return is(TokenKind::Literal);

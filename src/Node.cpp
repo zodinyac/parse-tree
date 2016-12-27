@@ -77,11 +77,11 @@ void Node::printInternal() const
             Left->printInternal();
         }
         if (Tok.isSymbolicOp() || Tok.isLiteral()) {
-            if (Tok.is(TokenKind::BinOp)) {
+            if (Tok.is(TokenKind::BinOp) && !Tok.getOp()->isOneOf(OperatorKind::BO_MemberAccess, OperatorKind::BO_MemberAccessPtr, OperatorKind::BO_Comma)) {
                 cout << " ";
             }
             cout << string(Tok);
-            if (Tok.is(TokenKind::BinOp) && Right) {
+            if (Tok.is(TokenKind::BinOp) && Right && !Tok.getOp()->isOneOf(OperatorKind::BO_MemberAccess, OperatorKind::BO_MemberAccessPtr)) {
                 cout << " ";
             }
         } else if (Tok.getOp()->is(OperatorKind::SO_ConcatenateLiteral)) {

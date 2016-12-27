@@ -19,7 +19,10 @@ public:
     bool isNot(OperatorKind Kind) const;
     bool isOneOf(OperatorKind Kind1, OperatorKind Kind2) const;
     template <typename... Ts>
-    bool isOneOf(OperatorKind Kind1, OperatorKind Kind2, Ts... Kinds) const;
+    bool isOneOf(OperatorKind Kind1, OperatorKind Kind2, Ts... Kinds) const
+    {
+        return is(Kind1) || isOneOf(Kind2, Kinds...);
+    }
 
     std::string getSpelling() const;
     std::string getSpellingShort() const;
