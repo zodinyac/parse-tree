@@ -121,7 +121,7 @@ Node *Parser::parseExpression(int MinPrecedence)
         }
         int NextMinPrecedence = Op->getPrecedence() + Op->isLeftAssociativity();
         Node *Atom_RHS = parseExpression(NextMinPrecedence);
-        if (Atom_RHS->getToken()->is(TokenKind::DoubleBrackets)) {
+        if (Atom_RHS && Atom_RHS->getToken()->is(TokenKind::DoubleBrackets)) {
             Tok = Token(Operator::getOperatorByKind(OperatorKind::SO_GetBits));
         }
         Atom_LHS = new Node(Tok, Atom_LHS, Atom_RHS);
