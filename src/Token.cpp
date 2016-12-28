@@ -108,6 +108,9 @@ Token::operator string() const
         case TokenKind::Brackets:
             return "[]";
 
+        case TokenKind::DoubleBrackets:
+            return "[[]]";
+
         case TokenKind::LeftBrace:
             return "{";
 

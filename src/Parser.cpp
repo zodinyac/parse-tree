@@ -21,7 +21,7 @@ Node *Parser::parseAtom()
 {
     Token Tok = Token::getCurrentToken();
 
-    if (Tok.isOneOf(TokenKind::None, TokenKind::RightParen, TokenKind::RightBracket) || Tok.isAnyOp()) {
+    if (Tok.isOneOf(TokenKind::None, TokenKind::RightParen, TokenKind::RightBracket, TokenKind::RightBrace) || Tok.isAnyOp()) {
         return nullptr;
     }
 
@@ -37,13 +37,30 @@ Node *Parser::parseAtom()
     }
     if (Tok.is(TokenKind::LeftBracket)) {
         Token::readNextToken(true, ss);
-        Node *node = parseExpression(1);
-        if (Token::getCurrentToken().isNot(TokenKind::RightBracket)) {
-            cerr << "Unmatched '['." << endl;
-            exit(2);
+        if (Token::getCurrentToken().is(TokenKind::LeftBracket)) {
+            Token::readNextToken(true, ss);
+            Node *node = parseExpression(1);
+            if (Token::getCurrentToken().isNot(TokenKind::RightBracket)) {
+                cerr << "Unmatched '[['." << endl;
+                exit(2);
+            } else {
+                Token::readNextToken(true, ss);
+                if (Token::getCurrentToken().isNot(TokenKind::RightBracket)) {
+                    cerr << "Unmatched '[['." << endl;
+                    exit(2);
+                }
+            }
+            Token::readNextToken(false, ss);
+            return new Node(TokenKind::DoubleBrackets, node);
+        } else {
+            Node *node = parseExpression(1);
+            if (Token::getCurrentToken().isNot(TokenKind::RightBracket)) {
+                cerr << "Unmatched '['." << endl;
+                exit(2);
+            }
+            Token::readNextToken(false, ss);
+            return new Node(TokenKind::Brackets, node);
         }
-        Token::readNextToken(false, ss);
-        return new Node(TokenKind::Brackets, node);
     }
     if (Tok.is(TokenKind::LeftBrace)) {
         Token::readNextToken(true, ss);
@@ -78,7 +95,7 @@ Node *Parser::parseExpression(int MinPrecedence)
                     Tok = Token(Operator::getOperatorByKind(OperatorKind::SO_TypeCast));
                 }
             } else if ((Atom_LHS->getToken()->is(TokenKind::Literal)
-                        || Atom_LHS->getToken()->getOp()->is(OperatorKind::SO_ArraySubscribing))
+                        || Atom_LHS->getToken()->getOp()->isOneOf(OperatorKind::SO_ArraySubscribing, OperatorKind::SO_GetBits))
                        && Tok.is(TokenKind::LeftBracket)) {
                 Tok = Token(Operator::getOperatorByKind(OperatorKind::SO_ArraySubscribing));
             } else if ((Atom_LHS->getToken()->is(TokenKind::Literal)
@@ -104,6 +121,9 @@ Node *Parser::parseExpression(int MinPrecedence)
         }
         int NextMinPrecedence = Op->getPrecedence() + Op->isLeftAssociativity();
         Node *Atom_RHS = parseExpression(NextMinPrecedence);
+        if (Atom_RHS->getToken()->is(TokenKind::DoubleBrackets)) {
+            Tok = Token(Operator::getOperatorByKind(OperatorKind::SO_GetBits));
+        }
         Atom_LHS = new Node(Tok, Atom_LHS, Atom_RHS);
     }
 

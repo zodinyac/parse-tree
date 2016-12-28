@@ -37,6 +37,12 @@ SPECIAL_OPERATOR(CompoundLiteral, "compound_literal", 1, Left)
 /* Special operator for concatenate literals (for example, in types: (const int *)) */
 SPECIAL_OPERATOR(ConcatenateLiteral, "concatenate_literal", 1, Left)
 
+/* Interval operator */
+BINARY_OPERATOR(Interval, "..", 1, Left)
+
+/* Get bits operator [[]] */
+SPECIAL_OPERATOR(GetBits, "get_bits", 1, Left)
+
 /*
  * Precedence 2
  */

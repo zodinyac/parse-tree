@@ -9,6 +9,7 @@ enum class TokenKind {
     LeftBracket,
     RightBracket,
     Brackets,
+    DoubleBrackets,
     LeftBrace,
     RightBrace,
     Braces,

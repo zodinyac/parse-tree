@@ -66,6 +66,12 @@ void Node::printInternal() const
             Left->printInternal();
         }
         cout << "]";
+    } else if (Tok.is(TokenKind::DoubleBrackets)) {
+        cout << "[[";
+        if (Left) {
+            Left->printInternal();
+        }
+        cout << "]]";
     } else if (Tok.is(TokenKind::Braces)) {
         cout << "{";
         if (Left) {
@@ -77,11 +83,16 @@ void Node::printInternal() const
             Left->printInternal();
         }
         if (Tok.isSymbolicOp() || Tok.isLiteral()) {
-            if (Tok.is(TokenKind::BinOp) && !Tok.getOp()->isOneOf(OperatorKind::BO_MemberAccess, OperatorKind::BO_MemberAccessPtr, OperatorKind::BO_Comma)) {
+            if (Tok.is(TokenKind::BinOp) && !Tok.getOp()->isOneOf(OperatorKind::BO_MemberAccess,
+                                                                  OperatorKind::BO_MemberAccessPtr,
+                                                                  OperatorKind::BO_Interval,
+                                                                  OperatorKind::BO_Comma)) {
                 cout << " ";
             }
             cout << string(Tok);
-            if (Tok.is(TokenKind::BinOp) && Right && !Tok.getOp()->isOneOf(OperatorKind::BO_MemberAccess, OperatorKind::BO_MemberAccessPtr)) {
+            if (Tok.is(TokenKind::BinOp) && Right && !Tok.getOp()->isOneOf(OperatorKind::BO_MemberAccess,
+                                                                           OperatorKind::BO_MemberAccessPtr,
+                                                                           OperatorKind::BO_Interval)) {
                 cout << " ";
             }
         } else if (Tok.getOp()->is(OperatorKind::SO_ConcatenateLiteral)) {
